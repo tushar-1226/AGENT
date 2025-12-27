@@ -1,0 +1,3 @@
+"""
+Friday Agent App Package
+"""

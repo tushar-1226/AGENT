@@ -1,0 +1,312 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+@layer base {
+    :root {
+        /* Dark Theme Palette - Matte Black & Grey */
+        --bg-primary: 0 0% 5%;        /* Matte black */
+        --bg-secondary: 0 0% 8%;      /* Slightly lighter black */
+        --bg-tertiary: 0 0% 12%;      /* Dark grey */
+        --bg-card: 0 0% 10%;          /* Card background */
+        --border: 0 0% 18%;           /* Dark grey border */
+        --border-glow: 210 100% 60%;  /* Electric blue glow */
+        --text-primary: 0 0% 96%;     /* Off-white */
+        --text-secondary: 0 0% 65%;   /* Light grey */
+        --text-muted: 0 0% 50%;       /* Muted grey */
+        --accent-blue: 210 100% 60%;  /* Electric blue */
+        --accent-blue-hover: 210 100% 65%;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+}
+
+body {
+    background: #0a0a0a;
+    background-image:
+        radial-gradient(ellipse at top, rgba(20, 20, 22, 0.8) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom, rgba(15, 15, 17, 0.6) 0%, transparent 50%);
+    color: hsl(var(--text-primary));
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+
+    /* Glassmorphism Card - Enterprise Grade */
+    .glass-card {
+        background: rgba(18, 18, 20, 0.6);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.6),
+            inset 0 1px 1px rgba(255, 255, 255, 0.05),
+            inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 100%);
+    }
+
+    .glass-card:hover {
+        border-color: rgba(59, 130, 246, 0.25);
+        box-shadow:
+            0 12px 48px rgba(0, 0, 0, 0.7),
+            0 0 24px rgba(59, 130, 246, 0.1),
+            inset 0 1px 1px rgba(255, 255, 255, 0.08),
+            inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* Primary Button - Electric Blue CTA */
+    .btn-primary {
+        background: hsl(var(--accent-blue));
+        color: #ffffff;
+        padding: 0.875rem 2.25rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        letter-spacing: 0.01em;
+        border: none;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow:
+            0 4px 14px rgba(59, 130, 246, 0.35),
+            0 2px 4px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary:hover {
+        background: hsl(var(--accent-blue-hover));
+        box-shadow:
+            0 6px 24px rgba(59, 130, 246, 0.5),
+            0 3px 6px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    /* Pill Button - Quick Actions */
+    .pill-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.75rem 1.5rem;
+        border-radius: 28px;
+        color: hsl(var(--text-secondary));
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .pill-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(59, 130, 246, 0.5);
+        color: hsl(var(--text-primary));
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 20px rgba(59, 130, 246, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        transform: translateY(-1px);
+    }
+
+    /* Input Field - Chat Input */
+    .input-dark {
+        background: rgba(18, 18, 20, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1.125rem 1.75rem;
+        border-radius: 12px;
+        color: hsl(var(--text-primary));
+        font-size: 1rem;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 100%;
+        box-shadow:
+            0 4px 16px rgba(0, 0, 0, 0.4),
+            inset 0 1px 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .input-dark::placeholder {
+        color: hsl(var(--text-muted));
+        font-weight: 400;
+    }
+
+    .input-dark:focus {
+        outline: none;
+        border-color: rgba(59, 130, 246, 0.5);
+        box-shadow:
+            0 6px 24px rgba(0, 0, 0, 0.5),
+            0 0 0 4px rgba(59, 130, 246, 0.08),
+            inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        background: rgba(18, 18, 20, 0.8);
+    }
+
+    /* Scrollbar */
+    .scrollbar-dark::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollbar-dark::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .scrollbar-dark::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+
+    .scrollbar-dark::-webkit-scrollbar-thumb:hover {
+        background: rgba(59, 130, 246, 0.5);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in-from-right {
+    animation: slideInFromRight 0.4s ease-out;
+}
+
+.slide-in-from-left {
+    animation: slideInFromLeft 0.4s ease-out;
+}
+
+.animate-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.stagger>* {
+    animation: fadeIn 0.5s ease-out backwards;
+}
+
+.stagger>*:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.stagger>*:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.stagger>*:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.stagger>*:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+/* Custom scrollbar for chat history */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.5);
+}
+
