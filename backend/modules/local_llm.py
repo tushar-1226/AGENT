@@ -13,46 +13,18 @@ load_dotenv()
 class LocalLLM:
     # Predefined models available in F.R.I.D.A.Y.
     AVAILABLE_MODELS = {
-        "qwen2.5-coder:7b": {
-            "name": "Qwen 2.5 Coder 7B",
-            "description": "Best for coding tasks - code generation, debugging, review",
-            "size": "4.7GB",
-            "type": "coding",
-            "icon": "🚀"
-        },
         "llama3.2:3b": {
             "name": "Llama 3.2 3B",
             "description": "Fast general-purpose model for quick responses",
             "size": "2.0GB",
             "type": "general",
             "icon": "⚡"
-        },
-        "gemma2:9b": {
-            "name": "Gemma 2 9B",
-            "description": "Balanced performance for general tasks",
-            "size": "5.4GB",
-            "type": "general",
-            "icon": "💎"
-        },
-        "codellama:7b": {
-            "name": "CodeLlama 7B",
-            "description": "Specialized for code completion and explanation",
-            "size": "3.8GB",
-            "type": "coding",
-            "icon": "💻"
-        },
-        "phi3:mini": {
-            "name": "Phi-3 Mini",
-            "description": "Efficient reasoning with low resource usage",
-            "size": "2.3GB",
-            "type": "general",
-            "icon": "🧠"
         }
     }
 
     def __init__(self, base_url: str = None):
         self.base_url = base_url or os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434')
-        self.model = os.getenv('LOCAL_MODEL', 'qwen2.5-coder:7b')
+        self.model = os.getenv('LOCAL_MODEL', 'llama3.2:3b')
         self.available = False
         self.installed_models = []
 

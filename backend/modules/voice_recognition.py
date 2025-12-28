@@ -39,33 +39,82 @@ class VoiceRecognizer:
         logger.info("Voice recognition stopped")
     
     def _listen_loop(self):
-        """Main listening loop"""
+        """Main listening loop with Wake Word detection"""
+        import time
+        
+        self.active_mode = False
+        self.last_active_time = 0
+        self.active_duration = 5  # seconds
+        
         with self.microphone as source:
             while self.listening:
                 try:
-                    logger.info("Listening for commands...")
-                    audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=10)
+                    # Determine current state
+                    is_active = False
+                    if self.active_mode:
+                        if time.time() - self.last_active_time < self.active_duration:
+                            is_active = True
+                        else:
+                            self.active_mode = False
+                            logger.info("Wake word timeout: Entering passive mode")
+                            if self.callback:
+                                self.callback("system_notification:exiting_active_mode")
+
+                    logger.info(f"Listening ({'ACTIVE' if is_active else 'PASSIVE'})...")
+                    
+                    # Adjust timeout based on mode
+                    listen_timeout = 5 if is_active else 2  # Short listen for wake word checks
                     
                     try:
+                        audio = self.recognizer.listen(source, timeout=listen_timeout, phrase_time_limit=10)
+                    except sr.WaitTimeoutError:
+                        continue
+
+                    try:
                         # Use Google Speech Recognition
-                        text = self.recognizer.recognize_google(audio)
+                        text = self.recognizer.recognize_google(audio).lower()
                         logger.info(f"Recognized: {text}")
                         
-                        if self.callback:
-                            self.callback(text)
-                        
-                        self.command_queue.put(text)
+                        # Check for Wake Word "Friday"
+                        if "friday" in text:
+                            logger.info("Wake word detected!")
+                            self.active_mode = True
+                            self.last_active_time = time.time()
+                            
+                            # Remove "friday" from text to see if there's a command attached
+                            command = text.replace("friday", "").strip()
+                            
+                            if command:
+                                logger.info(f"Command with wake word: {command}")
+                                if self.callback:
+                                    self.callback(command)
+                                self.command_queue.put(command)
+                            else:
+                                logger.info("Wake word only - waiting for command")
+                                if self.callback:
+                                    self.callback("system_notification:wake_word_detected")
+                                    
+                        elif self.active_mode:
+                            # Already in active mode, process as command
+                            logger.info(f"Active mode command: {text}")
+                            # Refresh timer? Optionally yes. Let's reset it to allow conversation flow.
+                            self.last_active_time = time.time() 
+                            
+                            if self.callback:
+                                self.callback(text)
+                            self.command_queue.put(text)
                         
                     except sr.UnknownValueError:
-                        logger.warning("Could not understand audio")
+                        # Only log warning if in active mode to avoid spamming "Could not understand" in passive
+                        if self.active_mode:
+                            logger.warning("Could not understand audio in active mode")
                     except sr.RequestError as e:
                         logger.error(f"Could not request results; {e}")
                         
-                except sr.WaitTimeoutError:
-                    # Timeout is normal, just continue
-                    continue
                 except Exception as e:
                     logger.error(f"Error in listen loop: {e}")
+                    import time
+                    time.sleep(1)  # Prevent tight loop on error
     
     def get_command(self, timeout: Optional[float] = None) -> Optional[str]:
         """Get next command from queue"""

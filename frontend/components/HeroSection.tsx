@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import VoiceControl from './VoiceControl';
 import FileUpload from './FileUpload';
 import MarkdownRenderer from './MarkdownRenderer';
+import VoiceOverlay from './VoiceOverlay';
 import config from '@/config/api';
 
 interface Message {
@@ -32,6 +33,7 @@ interface HeroSectionProps {
     response?: string;
     isListening?: boolean;
     isSpeaking?: boolean;
+    transcript?: string;
     onToggleListening?: () => void;
     voiceSupported?: boolean;
     onFileAnalyzed?: (analysis: string, fileInfo: any) => void;
@@ -44,6 +46,7 @@ export default function HeroSection({
     response = '',
     isListening = false,
     isSpeaking = false,
+    transcript = '',
     onToggleListening = () => { },
     voiceSupported = false,
     onFileAnalyzed = () => { },
@@ -56,9 +59,34 @@ export default function HeroSection({
     const [models, setModels] = useState<Model[]>([]);
     const [currentModel, setCurrentModel] = useState<Model | null>(null);
     const [showModelSelector, setShowModelSelector] = useState(false);
+
+    // Voice Overlay State
+    const [showVoiceOverlay, setShowVoiceOverlay] = useState(false);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const modelSelectorRef = useRef<HTMLDivElement>(null);
+
+    // Sync voice overlay with listening state
+    useEffect(() => {
+        if (isListening) {
+            setShowVoiceOverlay(true);
+        } else if (!isProcessing) {
+            // Keep overlay open for a moment if processing?
+            // For now, close if neither listening nor processing
+            // But if we just finished listening, we might be processing
+            if (!isProcessing) {
+                setShowVoiceOverlay(false);
+            }
+        }
+    }, [isListening, isProcessing]);
+
+    // Handle processing state for overlay "Okay I'm on it"
+    // The overlay handles its own text based on transcript and phase.
+    // If isProcessing is true, we might want to tell the overlay.
+    // But VoiceOverlay currently only takes isOpen/transcript.
+    // The requirement: "if i give voice command then itll first write the command... then proceed in voice 'okay im on it'"
+    // This implies we should wait before closing.
 
     // Fetch available models on mount
     useEffect(() => {
@@ -101,6 +129,8 @@ export default function HeroSection({
             ]);
             setLastUserMessage('');
             setShowWelcome(false);
+            // Hide overlay when response arrives
+            setShowVoiceOverlay(false);
         }
     }, [response]);
 
@@ -214,6 +244,16 @@ export default function HeroSection({
 
     return (
         <div className="flex-1 flex flex-col h-full">
+            {/* Voice Overlay */}
+            <VoiceOverlay
+                isOpen={showVoiceOverlay}
+                transcript={transcript}
+                onClose={() => {
+                    setShowVoiceOverlay(false);
+                    if (isListening) onToggleListening();
+                }}
+            />
+
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto scrollbar-dark">
                 {showWelcome && messages.length === 0 ? (
@@ -226,7 +266,7 @@ export default function HeroSection({
                                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                                 </svg>
                                 <h1 className="text-3xl font-normal text-gray-300">
-                                    Hi Tushar
+                                    Hello Sir
                                 </h1>
                             </div>
                             <p className="text-4xl font-light text-white">

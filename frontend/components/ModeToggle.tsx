@@ -92,13 +92,6 @@ export default function ModeToggle({ onModeChange }: ModeToggleProps) {
             color: 'from-green-500/10 to-emerald-500/10 border-green-500/30'
         },
         {
-            id: 'hybrid' as LLMMode,
-            name: 'Hybrid',
-            icon: '🔄',
-            description: 'Smart routing (recommended)',
-            color: 'from-blue-500/10 to-purple-500/10 border-blue-500/30'
-        },
-        {
             id: 'cloud' as LLMMode,
             name: 'Cloud Only',
             icon: '🌐',
@@ -181,7 +174,6 @@ export default function ModeToggle({ onModeChange }: ModeToggleProps) {
                                     <p className="font-medium text-white mb-1">Mode Details:</p>
                                     <ul className="space-y-1">
                                         <li>💻 <strong>Local:</strong> Private, fast, no API costs</li>
-                                        <li>🔄 <strong>Hybrid:</strong> Best of both worlds</li>
                                         <li>🌐 <strong>Cloud:</strong> Most capable</li>
                                     </ul>
                                 </div>

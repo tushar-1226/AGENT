@@ -280,6 +280,7 @@ export default function Home() {
                     response={commandResponse}
                     isListening={isListening}
                     isSpeaking={isSpeaking}
+                    transcript={transcript}
                     onToggleListening={toggleVoiceListening}
                     voiceSupported={voiceSupported}
                     onFileAnalyzed={handleFileAnalyzed}

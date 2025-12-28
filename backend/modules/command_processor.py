@@ -24,9 +24,10 @@ LLMMode = Literal['local', 'cloud', 'hybrid']
 
 
 class CommandProcessor:
-    def __init__(self, app_launcher: AppLauncher, tts: TextToSpeech, local_llm=None, gemini=None):
+    def __init__(self, app_launcher: AppLauncher, tts: TextToSpeech, local_llm=None, gemini=None, browser_automation=None):
         self.app_launcher = app_launcher
         self.tts = tts
+        self.browser_automation = browser_automation
 
         # Initialize Hybrid LLM system with provided instances or create new ones
         try:
@@ -72,6 +73,9 @@ class CommandProcessor:
 
         # Command patterns and their handlers (fallback)
         self.command_patterns = [
+            # Chained commands (Open X and Search Y)
+            (r'(?:open|launch|start)\s+(.+?)\s+and\s+(?:search|find|lookup)\s+(?:for\s+)?(.+)', self._handle_launch_and_search),
+
             # App launching
             (r'(?:open|launch|start|run)\s+(.+)', self._handle_launch_app),
             (r'(?:close|quit|exit|stop)\s+(.+)', self._handle_close_app),
@@ -459,3 +463,80 @@ class CommandProcessor:
             'message': 'Status check',
             'response': response
         }
+
+    def _handle_launch_and_search(self, match) -> Dict[str, any]:
+        """Handle 'open [app] and search [query]' commands"""
+        app_name = match.group(1).strip().lower()
+        query = match.group(2).strip()
+        
+        # Check if app is a browser
+        browsers = ['chrome', 'google chrome', 'browser', 'firefox', 'internet', 'edge', 'safari']
+        
+        if any(b in app_name for b in browsers):
+            if self.browser_automation:
+                response = f"Opening {app_name} and searching for {query}"
+                self.tts.speak(response)
+                
+                # Use browser automation to launch and search
+                import asyncio
+                
+                # We need to run this async, but we are in a sync method called by regex
+                # This is a bit tricky. For now, we'll try to schedule it or run it
+                # Best approach for this prototype: Use AppLauncher for the app (visual) 
+                # and append the search URL if possible?
+                # Actually, simple `google-chrome <url>` is best for "Opening Chrome" visible to user.
+                # Playwright is great for headless/automation, but might be overkill just to open a tab.
+                # Let's try AppLauncher with URL argument first if possible.
+                
+                search_url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+                
+                # Try to launch via command line with URL
+                # We can construct a "command" that includes the URL
+                # Update AppLauncher? Or just hack it here?
+                # Let's try to use system command via AppLauncher hack or just subprocess here?
+                # Better: Use BrowserAutomation if we want "Agentic" control (reading results later).
+                # But user just said "open and search".
+                # Let's use BrowserAutomation with headless=False to show the user.
+                
+                async def run_search():
+                    await self.browser_automation.start_browser(headless=False)
+                    await self.browser_automation.navigate(search_url)
+                
+                # Fire and forget / run in background?
+                # Since CommandProcessor is often called from async context (WebSocket), 
+                # but these regex handlers are sync functions...
+                # Actually process_command is async!
+                # But the regex handlers are called directly?
+                # process_command calls regex handlers synchronously: `return handler(match)`
+                # We should probably make regex handlers async? 
+                # Refactoring all regex handlers to async would be big.
+                # Alternative: Run in background thread/loop.
+                
+                try:
+                    loop = asyncio.get_event_loop()
+                    loop.create_task(run_search())
+                except RuntimeError:
+                    # New loop if none exists
+                    asyncio.run(run_search())
+                    
+                return {
+                    'success': True,
+                    'message': f"Launched {app_name} and searched for {query}",
+                    'response': response
+                }
+            else:
+                return {
+                    'success': False,
+                    'message': "Browser automation module not available",
+                    'response': "I cannot control the browser right now."
+                }
+        else:
+            # Not a browser - just launch the app and apologize about search
+            self.app_launcher.launch_app(app_name)
+            response = f"Opening {app_name}. I can only search within web browsers currently."
+            self.tts.speak(response)
+            return {
+                'success': True,  # Partial success
+                'message': f"Launched {app_name}, but skipped search",
+                'response': response
+            }

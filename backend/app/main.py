@@ -43,9 +43,9 @@ app = FastAPI(title="Friday Agent API", version="1.0.0")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -233,7 +233,8 @@ def get_command_processor():
             app_launcher,
             tts,
             local_llm=get_local_llm(),
-            gemini=get_gemini_processor()
+            gemini=get_gemini_processor(),
+            browser_automation=get_browser_automation()
         )
         logger.info("Initialized CommandProcessor with LLM instances")
     return command_processor
@@ -1478,6 +1479,80 @@ async def pull_local_model(data: dict):
     except Exception as e:
         logger.error(f"Pull model error: {e}")
         return {"success": False, "error": str(e)}
+
+
+# ============= NEW LOCAL LLM ENDPOINTS (Frontend Compatible) =============
+
+@app.get("/api/local-llm/available-models")
+async def get_available_models_v2():
+    """Get processed models list for UI"""
+    try:
+        local_llm = get_local_llm()
+        # Ensure we have latest installed status
+        await local_llm.check_availability()
+        
+        models = local_llm.get_available_models()
+        return {"success": True, "models": models}
+    except Exception as e:
+        logger.error(f"Get available models error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/local-llm/select-model")
+async def select_local_model(data: dict):
+    """Select active local model"""
+    try:
+        model_id = data.get("model_id")
+        if not model_id:
+            return JSONResponse(status_code=400, content={"error": "Model ID required"})
+            
+        local_llm = get_local_llm()
+        success = local_llm.set_model(model_id)
+        
+        if success:
+            return {"success": True, "model": local_llm.get_current_model()}
+        else:
+            return JSONResponse(status_code=400, content={"error": "Invalid model ID"})
+    except Exception as e:
+        logger.error(f"Select model error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.get("/api/llm/get-mode")
+async def get_llm_mode():
+    """Get current LLM mode (local/cloud/hybrid)"""
+    try:
+        # CommandProcessor holds the mode authority
+        cp = get_command_processor()
+        return {
+            "success": True, 
+            "mode": cp.mode,
+            "using_hybrid": cp.hybrid_llm is not None
+        }
+    except Exception as e:
+        logger.error(f"Get mode error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/llm/set-mode")
+async def set_llm_mode_v2(data: dict):
+    """Set LLM mode"""
+    try:
+        mode = data.get("mode") # local, cloud, hybrid
+        if mode not in ['local', 'cloud', 'hybrid']:
+            return JSONResponse(status_code=400, content={"error": "Invalid mode"})
+            
+        cp = get_command_processor()
+        cp.mode = mode
+        
+        # If hybrid, also update hybrid manager
+        if cp.hybrid_llm:
+            await cp.hybrid_llm.set_mode(mode)
+            
+        return {"success": True, "mode": mode}
+    except Exception as e:
+        logger.error(f"Set mode error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 # ============= RAG DOCUMENT INTELLIGENCE ENDPOINTS =============
