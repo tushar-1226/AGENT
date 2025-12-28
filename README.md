@@ -1,19 +1,19 @@
-# 🤖 F.R.I.D.A.Y. Agent - AI Development Platform
+# F.R.I.D.A.Y. Agent - AI Development Platform
 
 **The Most Advanced AI-Powered Development Assistant**
 
-A comprehensive, standalone development platform with 19 revolutionary features including RAG document intelligence, integrated terminal, Git integration, and much more.
+A comprehensive, standalone development platform with 24 revolutionary features including RAG document intelligence, integrated terminal, Git integration, and much more.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![Python](https://img.shields.io/badge/python-3.9+-green)
 ![Next.js](https://img.shields.io/badge/next.js-14-black)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
 ---
 
-## 🌟 Features Overview
+## Features Overview
 
-### 🧠 Revolutionary Features (New!)
+### Revolutionary Features
 
 1. **RAG Document Intelligence** - Upload entire codebase for AI-powered semantic search
 2. **Integrated Terminal** - Execute commands directly from chat with real-time output
@@ -22,25 +22,30 @@ A comprehensive, standalone development platform with 19 revolutionary features 
 5. **Screenshot to Code** - Convert UI mockups to React components
 6. **Browser Automation** - Playwright-powered E2E testing
 7. **Learning Path Generator** - Personalized education curriculum
+8. **Universal App Launcher** - Launch and manage system applications directly from chat
+9. **AI Code Translator** - Translate code between languages (Python, JS, TS, Go) while preserving logic
+10. **AI Code Reviewer** - Automated comprehensive reviews for security, performance, and quality
+11. **Living Documentation** - Auto-generate documentation with architecture diagrams
+12. **Code Metrics Dashboard** - Advanced analytics for code complexity and maintainability
 
-### 💻 Core Features
+### Core Features
 
-8. **Smart Code Assistant** - Monaco editor with explain, debug, test, refactor modes
-9. **AI Task Management** - Natural language task parsing and organization
-10. **Productivity Analytics** - Charts, insights, and productivity scoring
-11. **Split-Screen Mode** - Work with multiple tools simultaneously
-12. **System Monitoring** - Real-time CPU, RAM, disk, network stats
-13. **Weather/News/Stock APIs** - Live data feeds
-14. **Google Calendar & Email** - OAuth integration ready
-15. **Local-Only Mode** - Ollama integration for privacy
-16. **Encrypted Session Storage** - AES-256 encryption
-17. **Voice Control** - Speech-to-text and text-to-speech
-18. **File Upload & Analysis** - Image and PDF processing
-19. **Enhanced Sidebar** - Chats, saved prompts, settings
+13. **Smart Code Assistant** - Monaco editor with explain, debug, test, refactor modes
+14. **AI Task Management** - Natural language task parsing and organization
+15. **Productivity Analytics** - Charts, insights, and productivity scoring
+16. **Split-Screen Mode** - Work with multiple tools simultaneously
+17. **System Monitoring** - Real-time CPU, RAM, disk, network stats
+18. **Weather/News/Stock APIs** - Live data feeds
+19. **Google Calendar & Email** - OAuth integration ready
+20. **Local-Only Mode** - Ollama integration for privacy
+21. **Encrypted Session Storage** - AES-256 encryption
+22. **Voice Control** - Speech-to-text and text-to-speech
+23. **File Upload & Analysis** - Image and PDF processing
+24. **Enhanced Sidebar** - Chats, saved prompts, settings
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -87,7 +92,7 @@ npm run dev
 
 ---
 
-## 📦 Architecture
+## Architecture
 
 ### Backend (FastAPI)
 
@@ -109,7 +114,12 @@ backend/
 │   ├── local_llm.py         # Ollama integration
 │   ├── encryption.py        # AES-256 encryption
 │   ├── session_manager.py   # Chat history
-│   └── file_processor.py    # File analysis
+│   ├── file_processor.py    # File analysis
+│   ├── app_launcher.py      # App Management
+│   ├── code_translator.py   # Multi-language translation
+│   ├── code_reviewer.py     # Static analysis & review
+│   ├── doc_generator.py     # Auto-documentation
+│   └── metrics_analyzer.py  # Code stats & complexity
 └── requirements.txt
 ```
 
@@ -128,13 +138,13 @@ frontend/
 │   ├── CodeAssistant.tsx    # Code editor
 │   ├── AnalyticsDashboard.tsx # Analytics
 │   ├── SplitScreen.tsx      # Split view
-│   └── ... (15 more components)
+│   └── ... (20 more components)
 └── package.json
 ```
 
 ---
 
-## 🎯 Usage Examples
+## Usage Examples
 
 ### RAG Document Intelligence
 
@@ -185,7 +195,7 @@ curl -X POST http://localhost:8000/api/tasks/parse \
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -214,7 +224,7 @@ For full features, install:
 cd backend
 pip install chromadb sentence-transformers \
   gitpython sqlalchemy psycopg2-binary pymysql \
-  playwright
+  playwright psutil
 
 # Install Playwright browsers
 playwright install
@@ -222,7 +232,7 @@ playwright install
 
 ---
 
-## 📚 API Documentation
+## API Documentation
 
 ### Core Endpoints
 
@@ -272,7 +282,7 @@ playwright install
 
 ---
 
-## 🔒 Security
+## Security
 
 - **AES-256 Encryption** for session storage
 - **PBKDF2 Key Derivation** (100,000 iterations)
@@ -283,7 +293,7 @@ playwright install
 
 ---
 
-## 🎨 Tech Stack
+## Tech Stack
 
 ### Backend
 - **FastAPI** - Modern Python web framework
@@ -293,6 +303,7 @@ playwright install
 - **SQLAlchemy** - Database ORM
 - **Playwright** - Browser automation
 - **Gemini AI** - Language model
+- **Psutil** - System process management
 
 ### Frontend
 - **Next.js 14** - React framework
@@ -304,7 +315,7 @@ playwright install
 
 ---
 
-## 📊 Performance
+## Performance
 
 - **API Response Time:** < 100ms average
 - **Terminal Execution:** Real-time streaming
@@ -314,7 +325,7 @@ playwright install
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Run endpoint tests:
 
@@ -332,7 +343,7 @@ Success Rate: 100.0%
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create feature branch (`git checkout -b feature/amazing-feature`)
@@ -342,13 +353,13 @@ Success Rate: 100.0%
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Google Gemini** for AI capabilities
 - **ChromaDB** for vector database
@@ -358,7 +369,7 @@ This project is licensed under the MIT License.
 
 ---
 
-## 📞 Support
+## Support
 
 For issues and questions:
 - Open an issue on GitHub
@@ -367,7 +378,7 @@ For issues and questions:
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] Multi-model support (GPT-4, Claude)
 - [ ] Plugin system
@@ -382,4 +393,4 @@ For issues and questions:
 
 **Built with ❤️ for developers by developers**
 
-**Version 2.0.0** - Complete Standalone Development Platform
+**Version 2.1.0** - Complete Standalone Development Platform
