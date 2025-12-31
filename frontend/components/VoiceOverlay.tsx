@@ -62,20 +62,25 @@ export default function VoiceOverlay({ isOpen, transcript, onClose }: VoiceOverl
             </div>
 
             {/* Status TextContainer */}
-            <div className="max-w-2xl px-6 text-center space-y-6">
-                <h2 className="text-3xl md:text-5xl font-light text-white tracking-tight animate-in slide-in-from-bottom-4 fade-in duration-500">
-                    {transcript ? (
-                        <>
-                            <span className="text-blue-400">User said:</span> "{transcript}"
-                        </>
-                    ) : (
-                        statusText
-                    )}
-                </h2>
+            <div className="max-w-4xl px-6 text-center space-y-6">
+                {transcript ? (
+                    <>
+                        <div className="text-sm text-blue-400/60 uppercase tracking-widest mb-2 animate-in fade-in duration-300">
+                            Voice Command Detected
+                        </div>
+                        <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tight animate-in slide-in-from-bottom-4 fade-in duration-500 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                            "{transcript}"
+                        </h2>
+                    </>
+                ) : (
+                    <h2 className="text-3xl md:text-5xl font-light text-white tracking-tight animate-in slide-in-from-bottom-4 fade-in duration-500">
+                        {statusText}
+                    </h2>
+                )}
 
                 {phase === 'processing' && (
-                    <p className="text-xl text-blue-200/80 animate-pulse">
-                        Okay, I'm on it...
+                    <p className="text-2xl text-green-400 font-semibold animate-pulse">
+                        ✓ Okay, I'm on it...
                     </p>
                 )}
             </div>

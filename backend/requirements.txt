@@ -10,6 +10,9 @@ aiosqlite==0.20.0
 psutil==6.1.1
 cryptography==44.0.0
 
+# QR Code Generation
+qrcode[pil]>=7.4.2
+
 # Optional dependencies for revolutionary features
 # Install with: pip install chromadb sentence-transformers gitpython sqlalchemy psycopg2-binary pymysql playwright
 

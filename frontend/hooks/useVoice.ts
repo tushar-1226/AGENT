@@ -18,6 +18,7 @@ interface UseVoiceReturn {
     updateSettings: (settings: Partial<VoiceSettings>) => void;
     wakeWordActive: boolean;
     toggleWakeWord: () => void;
+    timeRemaining: number;
 }
 
 export function useVoice(): UseVoiceReturn {
@@ -26,6 +27,7 @@ export function useVoice(): UseVoiceReturn {
     const [transcript, setTranscript] = useState('');
     const [isSupported, setIsSupported] = useState(false);
     const [wakeWordActive, setWakeWordActive] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(10);
     const [settings, setSettings] = useState<VoiceSettings>({
         enabled: true,
         autoPlay: true,
@@ -34,6 +36,9 @@ export function useVoice(): UseVoiceReturn {
 
     const recognitionRef = useRef<any>(null);
     const synthRef = useRef<SpeechSynthesis | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const hasSpokenRef = useRef<boolean>(false);
+    const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Initialize Web Speech API
     useEffect(() => {
@@ -44,12 +49,30 @@ export function useVoice(): UseVoiceReturn {
                 setIsSupported(true);
                 recognitionRef.current = new SpeechRecognition();
                 recognitionRef.current.continuous = false;
-                recognitionRef.current.interimResults = false;
+                recognitionRef.current.interimResults = true; // Enable interim results to detect speech
                 recognitionRef.current.lang = settings.language;
 
                 recognitionRef.current.onresult = (event: any) => {
-                    const transcript = event.results[0][0].transcript;
-                    setTranscript(transcript);
+                    const currentTranscript = event.results[0][0].transcript;
+                    
+                    // If user starts speaking, mark it
+                    if (currentTranscript && !hasSpokenRef.current) {
+                        hasSpokenRef.current = true;
+                        // Clear the 10-second timeout since user started speaking
+                        if (timeoutRef.current) {
+                            clearTimeout(timeoutRef.current);
+                            timeoutRef.current = null;
+                        }
+                        // Clear countdown interval
+                        if (countdownIntervalRef.current) {
+                            clearInterval(countdownIntervalRef.current);
+                            countdownIntervalRef.current = null;
+                        }
+                    }
+                    
+                    // Set transcript for both interim and final results
+                    // This ensures the UI shows what the user is saying
+                    setTranscript(currentTranscript);
                 };
 
                 recognitionRef.current.onend = () => {
@@ -84,14 +107,62 @@ export function useVoice(): UseVoiceReturn {
             if (synthRef.current) {
                 synthRef.current.cancel();
             }
+            // Clear timeout on cleanup
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+            // Clear countdown interval on cleanup
+            if (countdownIntervalRef.current) {
+                clearInterval(countdownIntervalRef.current);
+            }
         };
     }, [settings.language, wakeWordActive]);
 
     const startListening = useCallback(() => {
         if (recognitionRef.current && !isListening) {
             setTranscript('');
-            recognitionRef.current.start();
-            setIsListening(true);
+            hasSpokenRef.current = false; // Reset spoken flag
+            setTimeRemaining(10); // Reset timer
+            
+            try {
+                recognitionRef.current.start();
+                setIsListening(true);
+                
+                // Start countdown
+                let timeLeft = 10;
+                countdownIntervalRef.current = setInterval(() => {
+                    timeLeft -= 1;
+                    setTimeRemaining(timeLeft);
+                    
+                    if (timeLeft <= 0) {
+                        if (countdownIntervalRef.current) {
+                            clearInterval(countdownIntervalRef.current);
+                            countdownIntervalRef.current = null;
+                        }
+                    }
+                }, 1000);
+                
+                // Set 10-second timeout
+                timeoutRef.current = setTimeout(() => {
+                    // If user hasn't spoken in 10 seconds, stop listening
+                    if (!hasSpokenRef.current && recognitionRef.current) {
+                        console.log('10 seconds passed without speech, stopping...');
+                        setTranscript(''); // Clear transcript to indicate cancellation
+                        recognitionRef.current.stop();
+                        setIsListening(false);
+                        
+                        // Clear countdown interval
+                        if (countdownIntervalRef.current) {
+                            clearInterval(countdownIntervalRef.current);
+                            countdownIntervalRef.current = null;
+                        }
+                    }
+                }, 10000); // 10 seconds
+                
+            } catch (error) {
+                console.error('Error starting recognition:', error);
+                setIsListening(false);
+            }
         }
     }, [isListening]);
 
@@ -99,6 +170,18 @@ export function useVoice(): UseVoiceReturn {
         if (recognitionRef.current && isListening) {
             recognitionRef.current.stop();
             setIsListening(false);
+            
+            // Clear the timeout when manually stopping
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
+            
+            // Clear countdown interval
+            if (countdownIntervalRef.current) {
+                clearInterval(countdownIntervalRef.current);
+                countdownIntervalRef.current = null;
+            }
         }
     }, [isListening]);
 
@@ -154,6 +237,7 @@ export function useVoice(): UseVoiceReturn {
         settings,
         updateSettings,
         wakeWordActive,
-        toggleWakeWord
+        toggleWakeWord,
+        timeRemaining
     };
 }

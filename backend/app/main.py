@@ -35,6 +35,15 @@ from modules.project_manager import ProjectManager
 from modules.system_monitor import SystemMonitor
 from modules.analytics_manager import AnalyticsManager
 
+# Advanced AI modules
+from modules.multi_agent_system import MultiAgentSystem
+from modules.ai_testing_suite import AITestingSuite
+from modules.knowledge_graph import TeamKnowledgeGraph
+from modules.predictive_analytics import PredictiveAnalyticsDashboard
+from modules.security_copilot import SecurityCopilot
+from modules.performance_profiler import PerformanceProfiler
+from modules.workflow_automation import WorkflowAutomationEngine
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -80,6 +89,20 @@ database_manager = None
 screenshot_to_code = None
 browser_automation = None
 learning_engine = None
+
+# Advanced AI modules (lazy-loaded)
+multi_agent_system = None
+ai_testing_suite = None
+knowledge_graph = None
+predictive_analytics = None
+security_copilot = None
+performance_profiler = None
+workflow_automation = None
+
+# New feature modules (lazy-loaded)
+ai_copilot = None
+integrated_debugger = None
+code_snippets = None
 
 
 def get_file_processor():
@@ -220,6 +243,76 @@ def get_learning_engine():
         learning_engine = LearningEngine()
         logger.info("Initialized LearningEngine")
     return learning_engine
+
+
+def get_multi_agent_system():
+    global multi_agent_system
+    if multi_agent_system is None:
+        from modules.multi_agent_system import MultiAgentSystem
+
+        multi_agent_system = MultiAgentSystem()
+        logger.info("Initialized MultiAgentSystem")
+    return multi_agent_system
+
+
+def get_ai_testing_suite():
+    global ai_testing_suite
+    if ai_testing_suite is None:
+        from modules.ai_testing_suite import AITestingSuite
+
+        ai_testing_suite = AITestingSuite()
+        logger.info("Initialized AITestingSuite")
+    return ai_testing_suite
+
+
+def get_knowledge_graph():
+    global knowledge_graph
+    if knowledge_graph is None:
+        from modules.knowledge_graph import TeamKnowledgeGraph
+
+        knowledge_graph = TeamKnowledgeGraph()
+        logger.info("Initialized TeamKnowledgeGraph")
+    return knowledge_graph
+
+
+def get_predictive_analytics():
+    global predictive_analytics
+    if predictive_analytics is None:
+        from modules.predictive_analytics import PredictiveAnalyticsDashboard
+
+        predictive_analytics = PredictiveAnalyticsDashboard()
+        logger.info("Initialized PredictiveAnalyticsDashboard")
+    return predictive_analytics
+
+
+def get_security_copilot():
+    global security_copilot
+    if security_copilot is None:
+        from modules.security_copilot import SecurityCopilot
+
+        security_copilot = SecurityCopilot()
+        logger.info("Initialized SecurityCopilot")
+    return security_copilot
+
+
+def get_performance_profiler():
+    global performance_profiler
+    if performance_profiler is None:
+        from modules.performance_profiler import PerformanceProfiler
+
+        performance_profiler = PerformanceProfiler()
+        logger.info("Initialized PerformanceProfiler")
+    return performance_profiler
+
+
+def get_workflow_automation():
+    global workflow_automation
+    if workflow_automation is None:
+        from modules.workflow_automation import WorkflowAutomationEngine
+
+        workflow_automation = WorkflowAutomationEngine()
+        logger.info("Initialized WorkflowAutomationEngine")
+    return workflow_automation
 
 
 def get_command_processor():
@@ -2148,6 +2241,570 @@ async def terminal_command(data: dict):
         return {"success": False, "error": "Command timeout (10 seconds)"}
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+# QR Code Generator Endpoints
+@app.post("/api/qr/generate")
+async def generate_qr_code(data: dict):
+    """Generate QR code"""
+    try:
+        from modules.qr_generator import QRCodeGenerator
+        
+        qr_gen = QRCodeGenerator()
+        text = data.get("text", "")
+        size = data.get("size", 10)
+        border = data.get("border", 4)
+        fill_color = data.get("fill_color", "black")
+        back_color = data.get("back_color", "white")
+        error_correction = data.get("error_correction", "M")
+        style = data.get("style", "square")
+        
+        result = qr_gen.generate_qr_code(
+            data=text,
+            size=size,
+            border=border,
+            fill_color=fill_color,
+            back_color=back_color,
+            error_correction=error_correction,
+            style=style
+        )
+        
+        return result
+    except ImportError:
+        return {
+            "success": False,
+            "error": "QR code library not installed. Run: pip install qrcode[pil]"
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/api/qr/wifi")
+async def generate_wifi_qr(data: dict):
+    """Generate WiFi QR code"""
+    try:
+        from modules.qr_generator import QRCodeGenerator
+        
+        qr_gen = QRCodeGenerator()
+        ssid = data.get("ssid", "")
+        password = data.get("password", "")
+        security = data.get("security", "WPA")
+        
+        result = qr_gen.generate_wifi_qr(ssid, password, security)
+        
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/api/qr/vcard")
+async def generate_vcard_qr(data: dict):
+    """Generate vCard QR code"""
+    try:
+        from modules.qr_generator import QRCodeGenerator
+        
+        qr_gen = QRCodeGenerator()
+        name = data.get("name", "")
+        phone = data.get("phone", "")
+        email = data.get("email", "")
+        organization = data.get("organization", "")
+        url = data.get("url", "")
+        
+        result = qr_gen.generate_vcard_qr(name, phone, email, organization, url)
+        
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+# ============= AI Copilot Endpoints =============
+
+def get_ai_copilot():
+    """Lazy load AI Copilot"""
+    global ai_copilot
+    if ai_copilot is None:
+        from modules.ai_copilot import AICopilot
+        ai_copilot = AICopilot()
+    return ai_copilot
+
+
+@app.post("/api/copilot/completions")
+async def get_code_completions(data: dict):
+    """Get code completion suggestions (Enhanced with AI)"""
+    try:
+        copilot = get_ai_copilot()
+        code = data.get("code", "")
+        cursor_position = data.get("cursor_position", 0)
+        language = data.get("language", "python")
+        file_path = data.get("file_path", "")
+        project_path = data.get("project_path", "")
+        
+        suggestions = copilot.get_completions(
+            code, cursor_position, language, file_path, project_path
+        )
+        
+        return {
+            "success": True,
+            "suggestions": suggestions
+        }
+    except Exception as e:
+        logger.error(f"Copilot completions error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/copilot/signature")
+async def get_signature_help(data: dict):
+    """Get function signature help"""
+    try:
+        copilot = get_ai_copilot()
+        code = data.get("code", "")
+        cursor_position = data.get("cursor_position", 0)
+        language = data.get("language", "python")
+        
+        signature = copilot.get_signature_help(code, cursor_position, language)
+        
+        return {
+            "success": True,
+            "signature": signature
+        }
+    except Exception as e:
+        logger.error(f"Signature help error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/copilot/context")
+async def get_context_suggestions(data: dict):
+    """Get context-aware suggestions"""
+    try:
+        copilot = get_ai_copilot()
+        code = data.get("code", "")
+        file_path = data.get("file_path", "")
+        language = data.get("language", "python")
+        
+        suggestions = copilot.get_context_suggestions(code, file_path, language)
+        
+        return {
+            "success": True,
+            "suggestions": suggestions
+        }
+    except Exception as e:
+        logger.error(f"Context suggestions error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/copilot/detect-errors")
+async def detect_code_errors(data: dict):
+    """Detect potential errors and code quality issues"""
+    try:
+        copilot = get_ai_copilot()
+        code = data.get("code", "")
+        language = data.get("language", "python")
+        
+        issues = copilot.detect_errors(code, language)
+        
+        return {
+            "success": True,
+            "issues": issues,
+            "count": len(issues)
+        }
+    except Exception as e:
+        logger.error(f"Error detection failed: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/copilot/improvements")
+async def get_code_improvements(data: dict):
+    """Get AI-powered code improvement suggestions"""
+    try:
+        copilot = get_ai_copilot()
+        code = data.get("code", "")
+        language = data.get("language", "python")
+        
+        improvements = copilot.get_code_improvements(code, language)
+        
+        return {
+            "success": True,
+            "improvements": improvements,
+            "count": len(improvements)
+        }
+    except Exception as e:
+        logger.error(f"Code improvements failed: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/copilot/explain")
+async def explain_code(data: dict):
+    """Explain what a code snippet does using AI"""
+    try:
+        copilot = get_ai_copilot()
+        code = data.get("code", "")
+        language = data.get("language", "python")
+        
+        explanation = copilot.explain_code(code, language)
+        
+        return {
+            "success": True,
+            "explanation": explanation
+        }
+    except Exception as e:
+        logger.error(f"Code explanation failed: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+# ============= Integrated Debugger Endpoints =============
+
+def get_integrated_debugger():
+    """Lazy load Integrated Debugger"""
+    global integrated_debugger
+    if integrated_debugger is None:
+        from modules.integrated_debugger import IntegratedDebugger
+        integrated_debugger = IntegratedDebugger()
+    return integrated_debugger
+
+
+@app.post("/api/debugger/session")
+async def create_debug_session(data: dict):
+    """Create a new debug session"""
+    try:
+        debugger = get_integrated_debugger()
+        file_path = data.get("file_path")
+        
+        if not file_path:
+            return JSONResponse(status_code=400, content={"error": "file_path is required"})
+        
+        session_id = debugger.create_session(file_path)
+        session = debugger.get_session(session_id)
+        
+        return {
+            "success": True,
+            "session": session.to_dict() if session else None
+        }
+    except Exception as e:
+        logger.error(f"Create debug session error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.get("/api/debugger/sessions")
+async def list_debug_sessions():
+    """List all debug sessions"""
+    try:
+        debugger = get_integrated_debugger()
+        sessions = debugger.list_sessions()
+        
+        return {
+            "success": True,
+            "sessions": sessions
+        }
+    except Exception as e:
+        logger.error(f"List sessions error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/debugger/{session_id}/breakpoint")
+async def add_breakpoint(session_id: str, data: dict):
+    """Add a breakpoint"""
+    try:
+        debugger = get_integrated_debugger()
+        line_number = data.get("line_number")
+        condition = data.get("condition")
+        
+        success = debugger.add_breakpoint(session_id, line_number, condition)
+        
+        return {
+            "success": success,
+            "session_id": session_id,
+            "line_number": line_number
+        }
+    except Exception as e:
+        logger.error(f"Add breakpoint error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.delete("/api/debugger/{session_id}/breakpoint/{line_number}")
+async def remove_breakpoint(session_id: str, line_number: int):
+    """Remove a breakpoint"""
+    try:
+        debugger = get_integrated_debugger()
+        success = debugger.remove_breakpoint(session_id, line_number)
+        
+        return {"success": success}
+    except Exception as e:
+        logger.error(f"Remove breakpoint error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/debugger/{session_id}/start")
+async def start_debugging(session_id: str):
+    """Start debugging"""
+    try:
+        debugger = get_integrated_debugger()
+        result = debugger.start_debugging(session_id)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Start debugging error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/debugger/{session_id}/step-over")
+async def step_over(session_id: str):
+    """Step over current line"""
+    try:
+        debugger = get_integrated_debugger()
+        result = debugger.step_over(session_id)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Step over error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/debugger/{session_id}/step-into")
+async def step_into(session_id: str):
+    """Step into function"""
+    try:
+        debugger = get_integrated_debugger()
+        result = debugger.step_into(session_id)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Step into error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/debugger/{session_id}/continue")
+async def continue_execution(session_id: str):
+    """Continue execution"""
+    try:
+        debugger = get_integrated_debugger()
+        result = debugger.continue_execution(session_id)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Continue error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.get("/api/debugger/{session_id}/variables")
+async def get_variables(session_id: str, scope: str = "local"):
+    """Get variables in current scope"""
+    try:
+        debugger = get_integrated_debugger()
+        result = debugger.get_variables(session_id, scope)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Get variables error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/debugger/{session_id}/evaluate")
+async def evaluate_expression(session_id: str, data: dict):
+    """Evaluate expression in debug context"""
+    try:
+        debugger = get_integrated_debugger()
+        expression = data.get("expression", "")
+        result = debugger.evaluate_expression(session_id, expression)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Evaluate error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+# ============= Code Snippets Endpoints =============
+
+def get_code_snippets():
+    """Lazy load Code Snippets Library"""
+    global code_snippets
+    if code_snippets is None:
+        from modules.code_snippets_library import CodeSnippetsLibrary
+        code_snippets = CodeSnippetsLibrary()
+    return code_snippets
+
+
+@app.get("/api/snippets/templates")
+async def get_snippet_templates(language: str = None):
+    """Get snippet templates"""
+    try:
+        snippets = get_code_snippets()
+        templates = snippets.list_templates(language)
+        
+        return {
+            "success": True,
+            "templates": templates
+        }
+    except Exception as e:
+        logger.error(f"Get templates error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.get("/api/snippets/languages")
+async def get_snippet_languages():
+    """Get supported languages"""
+    try:
+        snippets = get_code_snippets()
+        languages = snippets.get_languages()
+        
+        return {
+            "success": True,
+            "languages": languages
+        }
+    except Exception as e:
+        logger.error(f"Get languages error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.get("/api/snippets/template/{language}/{template_name}")
+async def get_specific_template(language: str, template_name: str):
+    """Get a specific template"""
+    try:
+        snippets = get_code_snippets()
+        template = snippets.get_template(language, template_name)
+        
+        if template:
+            return {
+                "success": True,
+                "template": template
+            }
+        else:
+            return JSONResponse(
+                status_code=404,
+                content={"error": "Template not found"}
+            )
+    except Exception as e:
+        logger.error(f"Get template error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+# ============================================================================
+# OPENROUTER API ENDPOINTS
+# ============================================================================
+
+openrouter_api = None
+
+def get_openrouter():
+    """Lazy-load OpenRouter integration"""
+    global openrouter_api
+    if openrouter_api is None:
+        from modules.openrouter_integration import OpenRouterAPI
+        openrouter_api = OpenRouterAPI()
+    return openrouter_api
+
+
+@app.post("/api/openrouter/chat")
+async def openrouter_chat(request: dict):
+    """
+    Send a chat request to OpenRouter
+    
+    Request body:
+    {
+        "messages": [{"role": "user", "content": "Hello"}],
+        "model": "meta-llama/llama-3.2-90b-vision-instruct:free",  # optional
+        "temperature": 0.7,  # optional
+        "max_tokens": 1000   # optional
+    }
+    """
+    try:
+        api = get_openrouter()
+        messages = request.get("messages", [])
+        model = request.get("model")
+        temperature = request.get("temperature", 0.7)
+        max_tokens = request.get("max_tokens", 1000)
+        
+        if not messages:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "messages field is required"}
+            )
+        
+        response = api.chat(
+            messages=messages,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        
+        if response.get("error"):
+            return JSONResponse(
+                status_code=500,
+                content={"error": response["error"], "success": False}
+            )
+        
+        return {
+            "success": True,
+            "response": response
+        }
+    except Exception as e:
+        logger.error(f"OpenRouter chat error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/openrouter/query")
+async def openrouter_simple_query(request: dict):
+    """
+    Simple text query to OpenRouter
+    
+    Request body:
+    {
+        "prompt": "What is Python?",
+        "model": "meta-llama/llama-3.2-90b-vision-instruct:free"  # optional
+    }
+    """
+    try:
+        api = get_openrouter()
+        prompt = request.get("prompt", "")
+        model = request.get("model")
+        
+        if not prompt:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "prompt field is required"}
+            )
+        
+        response_text = api.simple_query(prompt, model=model)
+        
+        return {
+            "success": True,
+            "response": response_text
+        }
+    except Exception as e:
+        logger.error(f"OpenRouter query error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.get("/api/openrouter/models")
+async def get_openrouter_models():
+    """Get list of available OpenRouter models"""
+    try:
+        api = get_openrouter()
+        models = api.get_available_models()
+        
+        return {
+            "success": True,
+            "models": models,
+            "count": len(models)
+        }
+    except Exception as e:
+        logger.error(f"Get OpenRouter models error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.get("/api/openrouter/models/free")
+async def get_free_openrouter_models():
+    """Get list of free OpenRouter models"""
+    try:
+        api = get_openrouter()
+        models = api.get_free_models()
+        
+        return {
+            "success": True,
+            "models": models,
+            "count": len(models)
+        }
+    except Exception as e:
+        logger.error(f"Get free models error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
 
 
 @app.websocket("/ws")

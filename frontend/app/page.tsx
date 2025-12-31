@@ -57,7 +57,8 @@ export default function Home() {
         startListening,
         stopListening,
         speak,
-        isSpeaking
+        isSpeaking,
+        timeRemaining
     } = useVoice();
 
     // Session management
@@ -98,6 +99,7 @@ export default function Home() {
     // Handle voice transcript
     useEffect(() => {
         if (transcript && !isListening) {
+            console.log('Processing voice command:', transcript);
             // Auto-send voice command
             sendCommand(transcript);
         }
@@ -269,6 +271,7 @@ export default function Home() {
                         isSpeaking={isSpeaking}
                         onToggleListening={toggleVoiceListening}
                         onFileAnalyzed={handleFileAnalyzed}
+                        timeRemaining={timeRemaining}
                     />
                 }
             />
@@ -285,6 +288,7 @@ export default function Home() {
                     voiceSupported={voiceSupported}
                     onFileAnalyzed={handleFileAnalyzed}
                     onModelChange={setCurrentModel}
+                    timeRemaining={timeRemaining}
                 />
             </main>
 

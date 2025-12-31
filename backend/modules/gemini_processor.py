@@ -12,24 +12,47 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# OpenRouter fallback
+try:
+    from modules.openrouter_integration import OpenRouterAPI
+    OPENROUTER_AVAILABLE = True
+except ImportError:
+    OPENROUTER_AVAILABLE = False
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class GeminiProcessor:
-    def __init__(self):
-        """Initialize Gemini AI processor"""
+    def __init__(self, use_openrouter_fallback=True):
+        """Initialize Gemini AI processor with OpenRouter fallback"""
         api_key = os.getenv('GEMINI_API_KEY')
+        self.model = None
+        self.openrouter = None
+        self.active_provider = None
         
-        if not api_key:
-            logger.error("GEMINI_API_KEY not found in environment variables")
-            raise ValueError("GEMINI_API_KEY is required")
+        # Try Gemini first
+        if api_key:
+            try:
+                genai.configure(api_key=api_key)
+                self.model = genai.GenerativeModel('gemini-2.5-flash')
+                self.active_provider = 'gemini'
+                logger.info("✅ Gemini processor initialized")
+            except Exception as e:
+                logger.error(f"Gemini initialization failed: {e}")
         
-        # Configure Gemini
-        genai.configure(api_key=api_key)
+        # Fallback to OpenRouter
+        if not self.model and use_openrouter_fallback and OPENROUTER_AVAILABLE:
+            try:
+                self.openrouter = OpenRouterAPI()
+                self.active_provider = 'openrouter'
+                logger.info("✅ Using OpenRouter as fallback for Gemini")
+            except Exception as e:
+                logger.error(f"OpenRouter fallback failed: {e}")
         
-        # Use Gemini 2.5 Flash model (latest stable model)
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
+        if not self.active_provider:
+            logger.error("No AI provider available (neither Gemini nor OpenRouter)")
+            raise ValueError("At least one AI provider (Gemini or OpenRouter) is required")
         
         # System prompt for Friday assistant
         self.system_context = """You are F.R.I.D.A.Y., a voice assistant inspired by Tony Stark's AI.
@@ -53,7 +76,7 @@ Always respond professionally yet warmly, like F.R.I.D.A.Y. would."""
     
     def analyze_command(self, user_input: str) -> Dict[str, any]:
         """
-        Analyze user command and extract intent
+        Analyze user command and extract intent with OpenRouter fallback
         
         Args:
             user_input: The user's natural language command
@@ -74,29 +97,16 @@ Analyze this command and provide a JSON response with:
 
 Respond ONLY with valid JSON, no additional text."""
 
-            # Generate response
-            response = self.model.generate_content(prompt)
+            # Use active provider or fallback
+            if self.active_provider == 'gemini' and self.model:
+                result = self._analyze_with_gemini(prompt)
+            elif self.active_provider == 'openrouter' and self.openrouter:
+                result = self._analyze_with_openrouter(prompt)
+            else:
+                return {'success': False, 'intent': 'unknown', 'error': 'No provider available'}
             
-            # Parse the response
-            import json
-            result_text = response.text.strip()
-            
-            # Remove markdown code blocks if present
-            if result_text.startswith('```'):
-                result_text = result_text.split('```')[1]
-                if result_text.startswith('json'):
-                    result_text = result_text[4:]
-            
-            result = json.loads(result_text.strip())
-            
-            logger.info(f"Gemini analysis: {result}")
-            return {
-                'success': True,
-                'intent': result.get('intent', 'unknown'),
-                'app_name': result.get('app_name'),
-                'ai_response': result.get('response', ''),
-                'raw_response': response.text
-            }
+            logger.info(f"Analysis ({result.get('provider')}): {result.get('intent')}")
+            return result
             
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse Gemini JSON response: {e}")
@@ -134,19 +144,78 @@ Action taken: {context}
 Generate a brief, natural response (1-2 sentences) that F.R.I.D.A.Y. would say.
 Keep it conversational and suitable for text-to-speech."""
 
-            response = self.model.generate_content(prompt)
-            return response.text.strip()
+            if self.active_provider == 'gemini' and self.model:
+                response = self.model.generate_content(prompt)
+                return response.text.strip()
+            elif self.active_provider == 'openrouter' and self.openrouter:
+                response = self.openrouter.simple_query(prompt)
+                return response.strip()
+            else:
+                return "Command processed."
             
         except Exception as e:
-            logger.error(f"Error generating response: {e}")
+            logger.error(f"Error generating response ({self.active_provider}): {e}")
+            # Try fallback
+            if self.active_provider == 'gemini' and self.openrouter:
+                try:
+                    response = self.openrouter.simple_query(prompt)
+                    return response.strip()
+                except:
+                    pass
             return "Command processed."
     
     def is_available(self) -> bool:
-        """Check if Gemini API is available"""
+        """Check if AI provider is available"""
+        return self.active_provider is not None
+    
+    def _analyze_with_gemini(self, prompt: str) -> dict:
+        """Analyze command using Gemini"""
         try:
-            # Simple test to verify API connection
-            test_response = self.model.generate_content("Hello")
-            return True
+            response = self.model.generate_content(prompt)
+            result_text = response.text.strip()
+            
+            if result_text.startswith('```'):
+                result_text = result_text.split('```')[1]
+                if result_text.startswith('json'):
+                    result_text = result_text[4:]
+            
+            result = json.loads(result_text.strip())
+            
+            return {
+                'success': True,
+                'intent': result.get('intent', 'unknown'),
+                'app_name': result.get('app_name'),
+                'ai_response': result.get('response', ''),
+                'raw_response': response.text,
+                'provider': 'gemini'
+            }
         except Exception as e:
-            logger.error(f"Gemini API not available: {e}")
-            return False
+            logger.error(f"Gemini analysis error: {e}")
+            if self.openrouter:
+                return self._analyze_with_openrouter(prompt)
+            return {'success': False, 'intent': 'unknown', 'error': str(e)}
+    
+    def _analyze_with_openrouter(self, prompt: str) -> dict:
+        """Analyze command using OpenRouter"""
+        try:
+            response = self.openrouter.simple_query(prompt)
+            result_text = response.strip()
+            
+            if result_text.startswith('```'):
+                result_text = result_text.split('```')[1]
+                if result_text.startswith('json'):
+                    result_text = result_text[4:]
+            
+            result = json.loads(result_text.strip())
+            
+            return {
+                'success': True,
+                'intent': result.get('intent', 'unknown'),
+                'app_name': result.get('app_name'),
+                'ai_response': result.get('response', ''),
+                'raw_response': response,
+                'provider': 'openrouter'
+            }
+        except Exception as e:
+            logger.error(f"OpenRouter analysis error: {e}")
+            return {'success': False, 'intent': 'unknown', 'error': str(e)}

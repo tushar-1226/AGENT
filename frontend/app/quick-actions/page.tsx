@@ -45,7 +45,11 @@ export default function ToolsPage() {
 
     // New: QR Code Generator
     const [qrText, setQrText] = useState('https://example.com');
-    const [qrSize, setQrSize] = useState(200);
+    const [qrSize, setQrSize] = useState(10);
+    const [qrImage, setQrImage] = useState<string>('');
+    const [qrStyle, setQrStyle] = useState('square');
+    const [qrFillColor, setQrFillColor] = useState('#000000');
+    const [qrBackColor, setQrBackColor] = useState('#ffffff');
 
     // New: Unit Price Calculator
     const [priceItems, setPriceItems] = useState<Array<{ id: number; label: string; price: string; quantity: string; unit: string }>>([
@@ -839,40 +843,155 @@ export default function ToolsPage() {
                 );
 
                 case 'qrcode':
-                    const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=${qrSize}x${qrSize}&chl=${encodeURIComponent(qrText)}`;
+                    const generateQR = async () => {
+                        try {
+                            const response = await fetch('http://localhost:8000/api/qr/generate', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    text: qrText,
+                                    size: qrSize,
+                                    border: 4,
+                                    fill_color: qrFillColor,
+                                    back_color: qrBackColor,
+                                    error_correction: 'M',
+                                    style: qrStyle
+                                })
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                setQrImage(data.image_base64);
+                                window.dispatchEvent(new CustomEvent('showToast', { 
+                                    detail: { message: 'QR Code generated!', type: 'success' } 
+                                }));
+                            } else {
+                                window.dispatchEvent(new CustomEvent('showToast', { 
+                                    detail: { message: data.error || 'Failed to generate QR', type: 'error' } 
+                                }));
+                            }
+                        } catch (e) {
+                            window.dispatchEvent(new CustomEvent('showToast', { 
+                                detail: { message: 'Error connecting to backend', type: 'error' } 
+                            }));
+                        }
+                    };
+
                     return (
                         <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6">
                             <h2 className="text-2xl font-semibold mb-4">QR Code Generator</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-sm text-gray-400">Text or URL</label>
-                                    <input value={qrText} onChange={(e) => setQrText(e.target.value)} className="w-full mt-2 p-3 rounded-lg bg-black/30 border border-white/10 focus:outline-none" />
-                                    <label className="text-sm text-gray-400 mt-3">Size (px)</label>
-                                    <input type="number" value={qrSize} onChange={(e) => setQrSize(Number(e.target.value || 200))} className="w-32 mt-2 p-2 rounded-lg bg-black/30 border border-white/10" />
-                                    <div className="mt-4 flex gap-2">
-                                        <a href={qrUrl} target="_blank" rel="noreferrer" className="px-4 py-2 bg-blue-600 rounded-lg">Open</a>
-                                        <button onClick={() => { navigator.clipboard.writeText(qrUrl); window.dispatchEvent(new CustomEvent('showToast', { detail: { message: 'QR image URL copied', type: 'success' } })); }} className="px-4 py-2 bg-white/10 rounded-lg">Copy Image URL</button>
-                                        <button onClick={async () => {
-                                            try {
-                                                const res = await fetch(qrUrl);
-                                                const blob = await res.blob();
-                                                const url = URL.createObjectURL(blob);
-                                                const a = document.createElement('a');
-                                                a.href = url;
-                                                a.download = `qrcode-${Date.now()}.png`;
-                                                document.body.appendChild(a);
-                                                a.click();
-                                                a.remove();
-                                                URL.revokeObjectURL(url);
-                                                window.dispatchEvent(new CustomEvent('showToast', { detail: { message: 'QR downloaded', type: 'success' } }));
-                                            } catch (e) {
-                                                window.dispatchEvent(new CustomEvent('showToast', { detail: { message: 'Failed to download QR', type: 'error' } }));
-                                            }
-                                        }} className="px-4 py-2 bg-green-600 rounded-lg">Download PNG</button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-sm text-gray-400">Text or URL</label>
+                                        <input 
+                                            value={qrText} 
+                                            onChange={(e) => setQrText(e.target.value)} 
+                                            className="w-full mt-2 p-3 rounded-lg bg-black/30 border border-white/10 focus:outline-none focus:border-blue-500" 
+                                            placeholder="Enter text or URL"
+                                        />
                                     </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-sm text-gray-400">Size</label>
+                                            <input 
+                                                type="number" 
+                                                value={qrSize} 
+                                                onChange={(e) => setQrSize(Number(e.target.value || 10))} 
+                                                min="5"
+                                                max="30"
+                                                className="w-full mt-2 p-2 rounded-lg bg-black/30 border border-white/10" 
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-sm text-gray-400">Style</label>
+                                            <select 
+                                                value={qrStyle}
+                                                onChange={(e) => setQrStyle(e.target.value)}
+                                                className="w-full mt-2 p-2 rounded-lg bg-black/30 border border-white/10"
+                                            >
+                                                <option value="square">Square</option>
+                                                <option value="rounded">Rounded</option>
+                                                <option value="circle">Circle</option>
+                                                <option value="gapped">Gapped</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-sm text-gray-400">Fill Color</label>
+                                            <input 
+                                                type="color" 
+                                                value={qrFillColor}
+                                                onChange={(e) => setQrFillColor(e.target.value)}
+                                                className="w-full mt-2 h-10 rounded-lg bg-black/30 border border-white/10" 
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-sm text-gray-400">Background</label>
+                                            <input 
+                                                type="color" 
+                                                value={qrBackColor}
+                                                onChange={(e) => setQrBackColor(e.target.value)}
+                                                className="w-full mt-2 h-10 rounded-lg bg-black/30 border border-white/10" 
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onClick={generateQR}
+                                        className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
+                                    >
+                                        Generate QR Code
+                                    </button>
+
+                                    {qrImage && (
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => {
+                                                    const a = document.createElement('a');
+                                                    a.href = qrImage;
+                                                    a.download = `qrcode-${Date.now()}.png`;
+                                                    document.body.appendChild(a);
+                                                    a.click();
+                                                    a.remove();
+                                                    window.dispatchEvent(new CustomEvent('showToast', { 
+                                                        detail: { message: 'QR Code downloaded!', type: 'success' } 
+                                                    }));
+                                                }}
+                                                className="flex-1 px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700"
+                                            >
+                                                Download PNG
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(qrText);
+                                                    window.dispatchEvent(new CustomEvent('showToast', { 
+                                                        detail: { message: 'Text copied!', type: 'success' } 
+                                                    }));
+                                                }}
+                                                className="flex-1 px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20"
+                                            >
+                                                Copy Text
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="flex items-center justify-center">
-                                    <img src={qrUrl} alt="QR Code" className="bg-white p-2 rounded" />
+
+                                <div className="flex items-center justify-center bg-gradient-to-br from-white/5 to-white/10 rounded-lg p-8">
+                                    {qrImage ? (
+                                        <img src={qrImage} alt="QR Code" className="max-w-full h-auto rounded-lg shadow-2xl" />
+                                    ) : (
+                                        <div className="text-center text-gray-500">
+                                            <svg className="w-32 h-32 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                            </svg>
+                                            <p className="text-sm">Click "Generate QR Code" to create</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

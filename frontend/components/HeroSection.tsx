@@ -38,6 +38,7 @@ interface HeroSectionProps {
     voiceSupported?: boolean;
     onFileAnalyzed?: (analysis: string, fileInfo: any) => void;
     onModelChange?: (model: Model | null) => void;
+    timeRemaining?: number;
 }
 
 export default function HeroSection({
@@ -50,7 +51,8 @@ export default function HeroSection({
     onToggleListening = () => { },
     voiceSupported = false,
     onFileAnalyzed = () => { },
-    onModelChange = () => { }
+    onModelChange = () => { },
+    timeRemaining = 10
 }: HeroSectionProps) {
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
@@ -62,6 +64,13 @@ export default function HeroSection({
 
     // Voice Overlay State
     const [showVoiceOverlay, setShowVoiceOverlay] = useState(false);
+
+    // Update input field with voice transcript
+    useEffect(() => {
+        if (transcript && !isListening) {
+            setInput(transcript);
+        }
+    }, [transcript, isListening]);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -150,6 +159,11 @@ export default function HeroSection({
 
             onSendCommand(input);
             setInput('');
+            
+            // Close voice overlay if it was open
+            if (showVoiceOverlay) {
+                setShowVoiceOverlay(false);
+            }
         }
     };
 
@@ -381,19 +395,26 @@ export default function HeroSection({
 
                                         {/* Voice Control */}
                                         {voiceSupported && (
-                                            <button
-                                                type="button"
-                                                onClick={onToggleListening}
-                                                className={`p-2 rounded-lg transition-colors ${isListening
-                                                    ? 'bg-red-500 text-white'
-                                                    : 'hover:bg-white/5 text-gray-400 hover:text-white'
-                                                    }`}
-                                                title="Voice input"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                                </svg>
-                                            </button>
+                                            <div className="relative">
+                                                <button
+                                                    type="button"
+                                                    onClick={onToggleListening}
+                                                    className={`p-2 rounded-lg transition-colors ${isListening
+                                                        ? 'bg-red-500 text-white'
+                                                        : 'hover:bg-white/5 text-gray-400 hover:text-white'
+                                                        }`}
+                                                    title="Voice input"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                                    </svg>
+                                                </button>
+                                                {isListening && timeRemaining > 0 && (
+                                                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500/90 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                                                        {timeRemaining}s
+                                                    </div>
+                                                )}
+                                            </div>
                                         )}
 
                                         {/* Submit Button */}
@@ -522,18 +543,25 @@ export default function HeroSection({
 
                                 <div className="absolute right-2 bottom-2 flex items-center gap-1">
                                     {voiceSupported && (
-                                        <button
-                                            type="button"
-                                            onClick={onToggleListening}
-                                            className={`p-2 rounded-lg transition-colors ${isListening
-                                                ? 'bg-red-500 text-white'
-                                                : 'hover:bg-white/5 text-gray-400 hover:text-white'
-                                                }`}
-                                        >
-                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                            </svg>
-                                        </button>
+                                        <div className="relative">
+                                            <button
+                                                type="button"
+                                                onClick={onToggleListening}
+                                                className={`p-2 rounded-lg transition-colors ${isListening
+                                                    ? 'bg-red-500 text-white'
+                                                    : 'hover:bg-white/5 text-gray-400 hover:text-white'
+                                                    }`}
+                                            >
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                                </svg>
+                                            </button>
+                                            {isListening && timeRemaining > 0 && (
+                                                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500/90 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                                                    {timeRemaining}s
+                                                </div>
+                                            )}
+                                        </div>
                                     )}
                                     <button
                                         type="submit"

@@ -14,6 +14,14 @@ from modules.gemini_processor import GeminiProcessor
 from modules.local_llm import LocalLLM, HybridLLM
 from modules.query_analyzer import QueryAnalyzer
 
+# OpenRouter integration
+try:
+    from modules.openrouter_integration import OpenRouterAPI
+    OPENROUTER_AVAILABLE = True
+except ImportError:
+    OPENROUTER_AVAILABLE = False
+    logger.warning("OpenRouter not available")
+
 # Load environment variables
 load_dotenv()
 
@@ -44,6 +52,15 @@ class CommandProcessor:
 
             self.hybrid_llm = HybridLLM(self.gemini, self.local_llm)
             self.query_analyzer = QueryAnalyzer()
+            
+            # Initialize OpenRouter for fallback and multi-model responses
+            self.openrouter = None
+            if OPENROUTER_AVAILABLE:
+                try:
+                    self.openrouter = OpenRouterAPI()
+                    logger.info("✅ OpenRouter available for fallback and multi-model responses")
+                except Exception as e:
+                    logger.warning(f"OpenRouter initialization failed: {e}")
 
             # Read default mode from environment, fallback to hybrid
             default_mode = os.getenv('LLM_MODE', 'hybrid').lower()
@@ -53,6 +70,7 @@ class CommandProcessor:
 
             self.mode: LLMMode = default_mode
             self.use_ai = True
+            self.enable_multi_model = os.getenv('ENABLE_MULTI_MODEL', 'false').lower() == 'true'
 
             # Usage tracking
             self.usage_stats = {
