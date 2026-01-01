@@ -104,6 +104,13 @@ ai_copilot = None
 integrated_debugger = None
 code_snippets = None
 
+# New advanced feature modules (lazy-loaded)
+collaborative_features = None
+ai_pair_programmer = None
+visual_programming = None
+code_search_navigation = None
+smart_testing_suite = None
+
 
 def get_file_processor():
     global file_processor
@@ -293,6 +300,56 @@ def get_security_copilot():
         security_copilot = SecurityCopilot()
         logger.info("Initialized SecurityCopilot")
     return security_copilot
+
+
+def get_collaborative_features():
+    global collaborative_features
+    if collaborative_features is None:
+        from modules.collaborative_features import CollaborativeFeatures
+        
+        collaborative_features = CollaborativeFeatures()
+        logger.info("Initialized CollaborativeFeatures")
+    return collaborative_features
+
+
+def get_ai_pair_programmer():
+    global ai_pair_programmer
+    if ai_pair_programmer is None:
+        from modules.ai_pair_programmer import AIPairProgrammer
+        
+        ai_pair_programmer = AIPairProgrammer(get_gemini_processor())
+        logger.info("Initialized AIPairProgrammer")
+    return ai_pair_programmer
+
+
+def get_visual_programming():
+    global visual_programming
+    if visual_programming is None:
+        from modules.visual_programming import VisualProgramming
+        
+        visual_programming = VisualProgramming(get_gemini_processor())
+        logger.info("Initialized VisualProgramming")
+    return visual_programming
+
+
+def get_code_search_navigation():
+    global code_search_navigation
+    if code_search_navigation is None:
+        from modules.code_search_navigation import CodeSearchNavigation
+        
+        code_search_navigation = CodeSearchNavigation(get_gemini_processor())
+        logger.info("Initialized CodeSearchNavigation")
+    return code_search_navigation
+
+
+def get_smart_testing_suite():
+    global smart_testing_suite
+    if smart_testing_suite is None:
+        from modules.smart_testing_suite import SmartTestingSuite
+        
+        smart_testing_suite = SmartTestingSuite(get_gemini_processor())
+        logger.info("Initialized SmartTestingSuite")
+    return smart_testing_suite
 
 
 def get_performance_profiler():
@@ -2787,6 +2844,482 @@ async def get_openrouter_models():
         }
     except Exception as e:
         logger.error(f"Get OpenRouter models error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.get("/api/openrouter/models/free")
+
+
+# ==================== NEW ADVANCED FEATURES API ====================
+
+# ==================== Collaborative Features ====================
+
+@app.post("/api/collab/session/create")
+async def create_collab_session(request: dict):
+    """Create a new collaborative coding session"""
+    try:
+        collab = get_collaborative_features()
+        result = await collab.create_session(
+            name=request.get("name", ""),
+            owner_id=request.get("owner_id", ""),
+            settings=request.get("settings")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error creating collaborative session: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/collab/session/join")
+async def join_collab_session(request: dict):
+    """Join an existing collaborative session"""
+    try:
+        collab = get_collaborative_features()
+        result = await collab.join_session(
+            session_id=request.get("session_id", ""),
+            user_id=request.get("user_id", ""),
+            user_name=request.get("user_name", ""),
+            role=request.get("role", "viewer")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error joining collaborative session: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/collab/code/change")
+async def apply_code_change(request: dict):
+    """Apply a code change in real-time collaboration"""
+    try:
+        collab = get_collaborative_features()
+        result = await collab.apply_code_change(
+            session_id=request.get("session_id", ""),
+            user_id=request.get("user_id", ""),
+            user_name=request.get("user_name", ""),
+            change_data=request.get("change_data", {})
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error applying code change: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/collab/review/create")
+async def create_code_review(request: dict):
+    """Create a code review assignment"""
+    try:
+        collab = get_collaborative_features()
+        result = await collab.create_code_review(
+            title=request.get("title", ""),
+            description=request.get("description", ""),
+            file_paths=request.get("file_paths", []),
+            assignee_id=request.get("assignee_id", ""),
+            reviewer_id=request.get("reviewer_id", ""),
+            ai_analysis=request.get("ai_analysis", True)
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error creating code review: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/collab/review/comment")
+async def add_review_comment(request: dict):
+    """Add a comment to code review"""
+    try:
+        collab = get_collaborative_features()
+        result = await collab.add_review_comment(
+            review_id=request.get("review_id", ""),
+            user_id=request.get("user_id", ""),
+            user_name=request.get("user_name", ""),
+            file_path=request.get("file_path", ""),
+            line_number=request.get("line_number", 0),
+            comment=request.get("comment", ""),
+            suggestion=request.get("suggestion")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error adding review comment: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/collab/snippet/create")
+async def create_team_snippet(request: dict):
+    """Create a shared code snippet"""
+    try:
+        collab = get_collaborative_features()
+        result = await collab.create_team_snippet(
+            title=request.get("title", ""),
+            description=request.get("description", ""),
+            code=request.get("code", ""),
+            language=request.get("language", "python"),
+            tags=request.get("tags", []),
+            author_id=request.get("author_id", "")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error creating team snippet: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/collab/snippet/search")
+async def search_team_snippets(request: dict):
+    """Search team knowledge base"""
+    try:
+        collab = get_collaborative_features()
+        result = await collab.search_team_snippets(
+            query=request.get("query", ""),
+            tags=request.get("tags"),
+            language=request.get("language")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error searching team snippets: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+# ==================== AI Pair Programmer ====================
+
+@app.post("/api/pair-programmer/suggestions")
+async def get_live_suggestions(request: dict):
+    """Get live code suggestions as user types"""
+    try:
+        pair_prog = get_ai_pair_programmer()
+        result = await pair_prog.get_live_suggestions(
+            code_context=request.get("code_context", {}),
+            trigger_type=request.get("trigger_type", "typing")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error getting live suggestions: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/pair-programmer/next-steps")
+async def suggest_next_steps(request: dict):
+    """Suggest next logical steps in implementation"""
+    try:
+        pair_prog = get_ai_pair_programmer()
+        result = await pair_prog.suggest_next_steps(
+            context=request.get("context", {})
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error suggesting next steps: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/pair-programmer/feedback")
+async def learn_from_feedback(request: dict):
+    """Learn from user feedback on suggestions"""
+    try:
+        pair_prog = get_ai_pair_programmer()
+        result = await pair_prog.learn_from_feedback(
+            suggestion_id=request.get("suggestion_id", ""),
+            accepted=request.get("accepted", False),
+            user_id=request.get("user_id", "")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error learning from feedback: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/pair-programmer/index-codebase")
+async def index_codebase(request: dict):
+    """Index codebase for context-aware suggestions"""
+    try:
+        pair_prog = get_ai_pair_programmer()
+        result = await pair_prog.index_codebase(
+            project_path=request.get("project_path", "")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error indexing codebase: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+# ==================== Visual Programming ====================
+
+@app.post("/api/visual/workflow/create")
+async def create_visual_workflow(request: dict):
+    """Create a new visual workflow"""
+    try:
+        visual_prog = get_visual_programming()
+        result = await visual_prog.create_workflow(
+            name=request.get("name", ""),
+            description=request.get("description", ""),
+            template=request.get("template")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error creating visual workflow: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/visual/workflow/add-node")
+async def add_workflow_node(request: dict):
+    """Add a node to visual workflow"""
+    try:
+        visual_prog = get_visual_programming()
+        result = await visual_prog.add_node(
+            workflow_id=request.get("workflow_id", ""),
+            node_type=request.get("node_type", ""),
+            label=request.get("label", ""),
+            position=request.get("position", {}),
+            config=request.get("config")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error adding workflow node: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/visual/workflow/generate-code")
+async def generate_code_from_workflow(request: dict):
+    """Generate code from visual workflow"""
+    try:
+        visual_prog = get_visual_programming()
+        result = await visual_prog.generate_code(
+            workflow_id=request.get("workflow_id", ""),
+            language=request.get("language", "python"),
+            framework=request.get("framework")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error generating code from workflow: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.get("/api/visual/templates")
+async def get_workflow_templates():
+    """Get available workflow templates"""
+    try:
+        visual_prog = get_visual_programming()
+        result = await visual_prog.get_templates()
+        return result
+    except Exception as e:
+        logger.error(f"Error getting workflow templates: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/visual/api/design")
+async def design_api_endpoint(request: dict):
+    """Design a visual API endpoint"""
+    try:
+        visual_prog = get_visual_programming()
+        result = await visual_prog.design_api_endpoint(
+            endpoint_name=request.get("endpoint_name", ""),
+            method=request.get("method", "GET"),
+            path=request.get("path", ""),
+            workflow_id=request.get("workflow_id")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error designing API endpoint: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+# ==================== Code Search & Navigation ====================
+
+@app.post("/api/code-search/index")
+async def index_codebase_for_search(request: dict):
+    """Index codebase for fast searching"""
+    try:
+        code_search = get_code_search_navigation()
+        result = await code_search.index_codebase(
+            project_path=request.get("project_path", ""),
+            file_extensions=request.get("file_extensions"),
+            exclude_dirs=request.get("exclude_dirs")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error indexing codebase: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/code-search/semantic")
+async def semantic_code_search(request: dict):
+    """Perform semantic search across codebase"""
+    try:
+        code_search = get_code_search_navigation()
+        result = await code_search.semantic_search(
+            query=request.get("query", ""),
+            project_path=request.get("project_path"),
+            max_results=request.get("max_results", 20)
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error in semantic search: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/code-search/similar-patterns")
+async def find_similar_code_patterns(request: dict):
+    """Find similar code patterns in codebase"""
+    try:
+        code_search = get_code_search_navigation()
+        result = await code_search.find_similar_patterns(
+            code_snippet=request.get("code_snippet", ""),
+            language=request.get("language", "python"),
+            threshold=request.get("threshold", 0.7)
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error finding similar patterns: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/code-search/dependencies")
+async def analyze_symbol_dependencies(request: dict):
+    """Analyze dependencies for a symbol"""
+    try:
+        code_search = get_code_search_navigation()
+        result = await code_search.analyze_dependencies(
+            symbol_name=request.get("symbol_name", ""),
+            file_path=request.get("file_path")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error analyzing dependencies: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/code-search/impact-analysis")
+async def perform_impact_analysis(request: dict):
+    """Analyze impact of changing a symbol"""
+    try:
+        code_search = get_code_search_navigation()
+        result = await code_search.impact_analysis(
+            symbol_name=request.get("symbol_name", ""),
+            file_path=request.get("file_path")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error in impact analysis: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/code-search/dead-code")
+async def detect_dead_code(request: dict):
+    """Detect unused functions and classes"""
+    try:
+        code_search = get_code_search_navigation()
+        result = await code_search.detect_dead_code(
+            project_path=request.get("project_path", "")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error detecting dead code: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/code-search/find-definition")
+async def find_symbol_definition(request: dict):
+    """Find definition of a symbol"""
+    try:
+        code_search = get_code_search_navigation()
+        result = await code_search.find_definition(
+            symbol_name=request.get("symbol_name", "")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error finding definition: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+# ==================== Smart Testing Suite ====================
+
+@app.post("/api/testing/generate-tests")
+async def generate_unit_tests(request: dict):
+    """Auto-generate unit tests for code"""
+    try:
+        testing = get_smart_testing_suite()
+        result = await testing.generate_unit_tests(
+            file_path=request.get("file_path", ""),
+            function_name=request.get("function_name"),
+            framework=request.get("framework", "pytest")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error generating tests: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/testing/run-tests")
+async def run_generated_tests(request: dict):
+    """Run generated tests"""
+    try:
+        testing = get_smart_testing_suite()
+        result = await testing.run_tests(
+            test_file_path=request.get("test_file_path", ""),
+            framework=request.get("framework", "pytest")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error running tests: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/testing/mutation-testing")
+async def perform_mutation_testing(request: dict):
+    """Perform mutation testing to assess test quality"""
+    try:
+        testing = get_smart_testing_suite()
+        result = await testing.perform_mutation_testing(
+            file_path=request.get("file_path", ""),
+            test_command=request.get("test_command", "pytest")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error in mutation testing: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/testing/benchmark")
+async def benchmark_function_performance(request: dict):
+    """Benchmark function performance"""
+    try:
+        testing = get_smart_testing_suite()
+        result = await testing.benchmark_function(
+            file_path=request.get("file_path", ""),
+            function_name=request.get("function_name", ""),
+            iterations=request.get("iterations", 1000),
+            compare_to_baseline=request.get("compare_to_baseline", False)
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error benchmarking function: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/testing/visual-regression")
+async def perform_visual_regression_test(request: dict):
+    """Perform visual regression testing"""
+    try:
+        testing = get_smart_testing_suite()
+        result = await testing.visual_regression_test(
+            url=request.get("url", ""),
+            screenshot_path=request.get("screenshot_path", ""),
+            baseline_path=request.get("baseline_path")
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error in visual regression test: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/testing/api-mock")
+async def generate_api_mock(request: dict):
+    """Generate API mocks from OpenAPI spec"""
+    try:
+        testing = get_smart_testing_suite()
+        result = await testing.generate_api_mock(
+            openapi_spec=request.get("openapi_spec", {})
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error generating API mock: {e}")
         return JSONResponse(status_code=500, content={"error": str(e), "success": False})
 
 
