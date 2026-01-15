@@ -6,22 +6,11 @@
   - Local:        http://localhost:3000
 
  ✓ Starting...
- ✓ Ready in 1974ms
+ ✓ Ready in 2s
  ○ Compiling / ...
- ✓ Compiled / in 9.3s (2439 modules)
- GET / 200 in 10150ms
- ✓ Compiled in 990ms (1216 modules)
- ○ Compiling /documentation ...
- ✓ Compiled /documentation in 585ms (2416 modules)
- ✓ Compiled /dashboard in 414ms (2427 modules)
- ✓ Compiled /system in 302ms (2433 modules)
- ○ Compiling /quick-actions ...
- ✓ Compiled /quick-actions in 656ms (2441 modules)
- ○ Compiling /code ...
- ✓ Compiled /code in 1746ms (2466 modules)
- ✓ Compiled /chat-history in 388ms (1511 modules)
- ✓ Compiled / in 222ms (1243 modules)
- GET / 200 in 399ms
- GET / 200 in 56ms
- GET / 200 in 45ms
- GET / 200 in 56ms
+ ✓ Compiled / in 8s (2439 modules)
+ GET / 200 in 8696ms
+ ✓ Compiled in 864ms (1216 modules)
+ ○ Compiling /settings ...
+ ✓ Compiled /settings in 692ms (2418 modules)
+ GET /settings 200 in 90ms

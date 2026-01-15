@@ -12,7 +12,7 @@ INFO:__main__:Friday Agent API initialized successfully
         
   @app.on_event("startup")
 INFO:__main__:Starting Friday Agent API...
-INFO:     Started server process [18586]
+INFO:     Started server process [4059]
 INFO:     Waiting for application startup.
 INFO:__main__:Running startup checks...
 INFO:__main__:Initialized LocalLLM
@@ -23,7 +23,7 @@ INFO:__main__:   2. Pull a model: ollama pull qwen2.5-coder:7b
 INFO:__main__:Friday Agent API ready!
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:44798 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:48520 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 1
 INFO:     connection open
 Google libraries not installed. Run: pip install google-auth google-auth-oauthlib google-api-python-client
@@ -32,15 +32,15 @@ SQLAlchemy not installed. Run: pip install sqlalchemy psycopg2-binary pymysql
 Playwright not installed. Run: pip install playwright && playwright install
 Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
 Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:44808 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48514 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
 Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:44808 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 0
+INFO:     127.0.0.1:48514 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
 INFO:     connection closed
-INFO:     127.0.0.1:44822 - "WebSocket /ws" [accepted]
+INFO:__main__:WebSocket disconnected. Total connections: 0
+INFO:     127.0.0.1:48526 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 1
 INFO:     connection open
-INFO:     127.0.0.1:44838 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:48536 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 2
 INFO:     connection open
 INFO:modules.gemini_processor:✅ Gemini processor initialized
@@ -50,389 +50,39 @@ INFO:__main__:Initialized BrowserAutomation
 INFO:modules.command_processor:✅ OpenRouter available for fallback and multi-model responses
 INFO:modules.command_processor:Hybrid LLM system initialized (Local + Cloud) - Default mode: hybrid
 INFO:__main__:Initialized CommandProcessor with LLM instances
-INFO:     127.0.0.1:34402 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34402 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41656 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41656 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41656 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41656 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
 INFO:__main__:WebSocket disconnected. Total connections: 1
 INFO:     connection closed
-INFO:     127.0.0.1:34416 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:50682 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 2
 INFO:     connection open
-INFO:     127.0.0.1:34418 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34418 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34418 - "GET /api/system/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34418 - "GET /api/projects HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34418 - "GET /api/projects HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34418 - "GET /api/chat/history?user_id=1&limit=5 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/chat/history?user_id=1&limit=5 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/projects HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/chat/history?user_id=1&limit=5 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:38700 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:38700 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34420 - "GET /api/system/complete HTTP/1.1" 200 OK
-INFO:     127.0.0.1:43602 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:43602 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50484 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50484 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50484 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50484 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32800 - "OPTIONS /api/execute-code HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "POST /api/execute-code HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:48712 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 3
-INFO:     connection open
-INFO:__main__:WebSocket disconnected. Total connections: 2
-INFO:     connection closed
-INFO:     127.0.0.1:48718 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 3
-INFO:     connection open
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:48734 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 4
-INFO:     connection open
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:32806 - "OPTIONS /api/llm/set-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50060 - "POST /api/llm/set-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50060 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50060 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50060 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50060 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50060 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50060 - "GET /api/chat/history?user_id=1&limit=100 HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 3
-INFO:     connection closed
-INFO:     127.0.0.1:51520 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 4
-INFO:     connection open
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:50060 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:50060 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 3
-INFO:     connection closed
-INFO:     127.0.0.1:50060 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51528 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 4
-INFO:     127.0.0.1:50060 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     connection open
-INFO:     127.0.0.1:51536 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 5
-INFO:     connection open
-INFO:     127.0.0.1:51542 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 6
-INFO:     connection open
-INFO:modules.command_processor:Processing command: open brave (Mode: cloud)
-INFO:modules.command_processor:Query complexity: simple, Code-related: False, Using: cloud
-INFO:modules.gemini_processor:Analysis (gemini): launch_app
-INFO:modules.command_processor:AI detected intent: launch_app, app: Brave
-INFO:modules.app_launcher:Launching brave with command: brave
-ERROR:modules.app_launcher:Application brave not found
-INFO:__main__:✅ Chat message saved to history: open brave...
-INFO:__main__:📢 Broadcasting new_chat_message to 6 clients
-INFO:__main__:✅ Broadcast complete
-INFO:     127.0.0.1:47182 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47182 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:47182 - "POST /api/llm/set-mode HTTP/1.1" 200 OK
-INFO:modules.command_processor:Processing command: open Chatgpt (Mode: local)
-INFO:modules.command_processor:Query complexity: simple, Code-related: False, Using: local
-Traceback (most recent call last):
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1115, in _wrap_create_connection
-    sock = await aiohappyeyeballs.start_connection(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
-    raise first_exception
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
-    sock = await _connect_sock(
-           ^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
-    await loop.sock_connect(sock, address)
-  File "uvloop/loop.pyx", line 2633, in sock_connect
-  File "uvloop/loop.pyx", line 1108, in uvloop.loop.Loop._sock_connect_cb
-ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 11434)
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/modules/local_llm.py", line 109, in generate
-    async with session.post(
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1425, in __aenter__
-    self._resp: _RetType = await self._coro
-                           ^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/client.py", line 703, in _request
-    conn = await self._connector.connect(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 548, in connect
-    proto = await self._create_connection(req, traces, timeout)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1056, in _create_connection
-    _, proto = await self._create_direct_connection(req, traces, timeout)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1400, in _create_direct_connection
-    raise last_exc
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1369, in _create_direct_connection
-    transp, proto = await self._wrap_create_connection(
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1130, in _wrap_create_connection
-    raise client_error(req.connection_key, exc) from exc
-aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-WARNING:modules.command_processor:Local model returned empty response. Strict local mode enabled - skipping fallback.
-INFO:modules.app_launcher:Launching chatgpt with command: chatgpt
-ERROR:modules.app_launcher:Application chatgpt not found
-INFO:__main__:✅ Chat message saved to history: open Chatgpt...
-INFO:__main__:📢 Broadcasting new_chat_message to 6 clients
-INFO:__main__:✅ Broadcast complete
-INFO:__main__:WebSocket disconnected. Total connections: 5
-INFO:__main__:WebSocket disconnected. Total connections: 4
-INFO:__main__:WebSocket disconnected. Total connections: 3
-INFO:__main__:WebSocket disconnected. Total connections: 2
+INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
 INFO:__main__:WebSocket disconnected. Total connections: 1
 INFO:__main__:WebSocket disconnected. Total connections: 0
 INFO:     connection closed
 INFO:     connection closed
-INFO:     connection closed
-INFO:     connection closed
-INFO:     connection closed
-INFO:     connection closed
-INFO:     127.0.0.1:39200 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 1
-INFO:     connection open
-Error generating with local model: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:39204 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:39204 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:     127.0.0.1:39208 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 2
-INFO:     connection open
-INFO:__main__:WebSocket disconnected. Total connections: 1
-INFO:     connection closed
-INFO:     127.0.0.1:39212 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 2
-INFO:     connection open
-INFO:modules.command_processor:Processing command: open brave (Mode: local)
-INFO:modules.command_processor:Query complexity: simple, Code-related: False, Using: local
-Traceback (most recent call last):
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1115, in _wrap_create_connection
-    sock = await aiohappyeyeballs.start_connection(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
-    raise first_exception
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
-    sock = await _connect_sock(
-           ^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
-    await loop.sock_connect(sock, address)
-  File "uvloop/loop.pyx", line 2633, in sock_connect
-  File "uvloop/loop.pyx", line 1108, in uvloop.loop.Loop._sock_connect_cb
-ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 11434)
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/modules/local_llm.py", line 109, in generate
-    async with session.post(
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1425, in __aenter__
-    self._resp: _RetType = await self._coro
-                           ^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/client.py", line 703, in _request
-    conn = await self._connector.connect(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 548, in connect
-    proto = await self._create_connection(req, traces, timeout)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1056, in _create_connection
-    _, proto = await self._create_direct_connection(req, traces, timeout)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1400, in _create_direct_connection
-    raise last_exc
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1369, in _create_direct_connection
-    transp, proto = await self._wrap_create_connection(
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1130, in _wrap_create_connection
-    raise client_error(req.connection_key, exc) from exc
-aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-WARNING:modules.command_processor:Local model returned empty response. Strict local mode enabled - skipping fallback.
-INFO:modules.app_launcher:Launching brave with command: brave
-ERROR:modules.app_launcher:Application brave not found
-INFO:__main__:✅ Chat message saved to history: open brave...
-INFO:__main__:📢 Broadcasting new_chat_message to 2 clients
-INFO:__main__:✅ Broadcast complete
-Error generating with local model: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:59638 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59638 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 1
-INFO:__main__:WebSocket disconnected. Total connections: 0
-INFO:     connection closed
-INFO:     connection closed
-INFO:     127.0.0.1:59658 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58196 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 1
 INFO:     connection open
 Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:59648 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50684 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
 Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:59648 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59668 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:50684 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58202 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 2
 INFO:     connection open
 INFO:__main__:WebSocket disconnected. Total connections: 1
 INFO:     connection closed
-INFO:     127.0.0.1:59682 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58206 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 2
 INFO:     connection open
-INFO:modules.command_processor:Processing command: What is API (Mode: local)
-INFO:modules.command_processor:Query complexity: simple, Code-related: False, Using: local
-Traceback (most recent call last):
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1115, in _wrap_create_connection
-    sock = await aiohappyeyeballs.start_connection(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
-    raise first_exception
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
-    sock = await _connect_sock(
-           ^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
-    await loop.sock_connect(sock, address)
-  File "uvloop/loop.pyx", line 2633, in sock_connect
-  File "uvloop/loop.pyx", line 1108, in uvloop.loop.Loop._sock_connect_cb
-ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 11434)
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/modules/local_llm.py", line 109, in generate
-    async with session.post(
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1425, in __aenter__
-    self._resp: _RetType = await self._coro
-                           ^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/client.py", line 703, in _request
-    conn = await self._connector.connect(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 548, in connect
-    proto = await self._create_connection(req, traces, timeout)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1056, in _create_connection
-    _, proto = await self._create_direct_connection(req, traces, timeout)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1400, in _create_direct_connection
-    raise last_exc
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1369, in _create_direct_connection
-    transp, proto = await self._wrap_create_connection(
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/tushar/Downloads/Dev/Agent/friday-agent/backend/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1130, in _wrap_create_connection
-    raise client_error(req.connection_key, exc) from exc
-aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-WARNING:modules.command_processor:Local model returned empty response. Strict local mode enabled - skipping fallback.
-INFO:__main__:✅ Chat message saved to history: What is API...
-INFO:__main__:📢 Broadcasting new_chat_message to 2 clients
-INFO:__main__:✅ Broadcast complete
-Error generating with local model: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:37202 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37202 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37202 - "POST /api/llm/set-mode HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 1
-INFO:__main__:WebSocket disconnected. Total connections: 0
-INFO:     connection closed
-INFO:     connection closed
-INFO:     127.0.0.1:37172 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 1
-INFO:     connection open
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:37158 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:37158 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 0
-INFO:     connection closed
-INFO:     127.0.0.1:37186 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 1
-INFO:     connection open
-INFO:     127.0.0.1:37188 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 2
-INFO:     connection open
-INFO:     127.0.0.1:37158 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37158 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:modules.command_processor:Processing command: What is API (Mode: cloud)
-INFO:modules.command_processor:Query complexity: simple, Code-related: False, Using: cloud
-INFO:modules.gemini_processor:Analysis (gemini): unknown
-INFO:modules.command_processor:AI detected intent: unknown, app: None
-INFO:__main__:✅ Chat message saved to history: What is API...
-INFO:__main__:📢 Broadcasting new_chat_message to 2 clients
-INFO:__main__:✅ Broadcast complete
-INFO:     127.0.0.1:36506 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:36506 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:36506 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:36506 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41996 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41996 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 1
-INFO:__main__:WebSocket disconnected. Total connections: 0
-INFO:     connection closed
-INFO:     connection closed
-INFO:     127.0.0.1:42000 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 1
-INFO:     connection open
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:41996 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:41996 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 0
-INFO:     connection closed
-INFO:     127.0.0.1:42010 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 1
-INFO:     connection open
-INFO:     127.0.0.1:42020 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 2
-INFO:     connection open
-INFO:     127.0.0.1:41996 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41996 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45428 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45428 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45428 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45428 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45428 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45428 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 1
-INFO:     connection closed
-INFO:     127.0.0.1:45440 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 2
-INFO:     connection open
-INFO:     127.0.0.1:45260 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45260 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45260 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45260 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45260 - "POST /api/execute-code HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 1
-INFO:__main__:WebSocket disconnected. Total connections: 0
-INFO:     connection closed
-INFO:     connection closed
+INFO:     127.0.0.1:50684 - "OPTIONS /api/llm/set-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58214 - "POST /api/llm/set-mode HTTP/1.1" 200 OK
