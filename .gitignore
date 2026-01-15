@@ -2,37 +2,93 @@
 node_modules/
 frontend/node_modules/
 
+# Python virtual environment
+backend/venv/
+backend/.venv/
+venv/
+.venv/
+
 # Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.pyw
+*.so
+.Python
 
-# Environment files
+# Environment files - ALL VARIANTS
 .env
-.env.local
-.env.production
+.env.*
+frontend/.env.local
+frontend/.env.production
+frontend/.env.development
+!.env.example
+!.env.production
+!frontend/.env.local.example
 
 # Logs
 *.log
 backend.log
 frontend.log
+ollama.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Databases
 *.db
+*.db-journal
+*.sqlite
+*.sqlite3
 analytics.db
 chat_sessions.db
 projects.db
 users.db
+tasks.db
+dev_tools.db
+backend/*.db
+backend/*.db-journal
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
+# Next.js build outputs
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/dist/
+.next/
+out/
 
 # Build outputs
 dist/
 build/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Upload directories
+backend/uploads/*
+!backend/uploads/.gitkeep
+uploads/*
+
+# Docker volumes
+docker-volumes/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Misc
+.cache/
+temp/
+tmp/

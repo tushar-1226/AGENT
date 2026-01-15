@@ -49,59 +49,76 @@ class ExternalAPIs:
             return {'error': f'Weather API error: {str(e)}'}
     
     async def get_news(self, category: str = 'technology', country: str = 'us') -> Dict[str, Any]:
-        """Get top news headlines using free GNews API (no key required for basic usage)"""
-        # Using GNews API - free tier with no authentication required
-        # Alternative: Use RSS feeds or NewsData.io demo
+        """Get top news headlines using NewsAPI.org"""
         
-        # Map category to GNews topics
-        topic_map = {
-            'technology': 'technology',
-            'business': 'business',
-            'sports': 'sports',
-            'science': 'science',
-            'health': 'health',
-            'entertainment': 'entertainment'
-        }
+        # If no API key configured, return fallback data
+        if not self.news_api_key:
+            print("NEWS_API_KEY not configured, using mock data")
+            return self._get_mock_news()
         
-        topic = topic_map.get(category, 'technology')
+        # Map category to NewsAPI.org categories
+        valid_categories = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology']
+        if category not in valid_categories:
+            category = 'technology'  # Default to technology
         
-        # Using GNews free API (no key needed for limited requests)
-        url = f'https://gnews.io/api/v4/top-headlines'
+        # NewsAPI.org top headlines endpoint
+        url = 'https://newsapi.org/v2/top-headlines'
         params = {
-            'category': topic,
-            'lang': 'en',
+            'category': category,
             'country': country,
-            'max': 10,
-            'apikey': 'demo'  # Demo key for testing, works with limited requests
+            'pageSize': 10,
+            'apiKey': self.news_api_key
         }
         
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(url, params=params) as response:
+                async with session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=10)) as response:
                     if response.status == 200:
                         data = await response.json()
-                        articles = []
-                        for article in data.get('articles', [])[:10]:
-                            articles.append({
-                                'title': article['title'],
-                                'description': article.get('description', ''),
-                                'url': article['url'],
-                                'source': article['source']['name'],
-                                'published_at': article['publishedAt'],
-                                'image': article.get('image')
-                            })
-                        return {
-                            'category': category,
-                            'articles': articles,
-                            'total': len(articles)
-                        }
-                    else:
-                        # Fallback to mock data if API fails
+                        
+                        # Check if the request was successful
+                        if data.get('status') == 'ok':
+                            articles = []
+                            for article in data.get('articles', [])[:10]:
+                                articles.append({
+                                    'title': article.get('title', 'No title'),
+                                    'description': article.get('description', ''),
+                                    'url': article.get('url', ''),
+                                    'source': article.get('source', {}).get('name', 'Unknown'),
+                                    'published_at': article.get('publishedAt', ''),
+                                    'image': article.get('urlToImage'),
+                                    'author': article.get('author'),
+                                    'content': article.get('content', '')
+                                })
+                            return {
+                                'category': category,
+                                'country': country,
+                                'articles': articles,
+                                'total': len(articles),
+                                'source': 'NewsAPI.org'
+                            }
+                        else:
+                            # API returned error
+                            error_msg = data.get('message', 'Unknown error')
+                            print(f"NewsAPI.org error: {error_msg}")
+                            return self._get_mock_news()
+                    elif response.status == 401:
+                        print("NewsAPI.org authentication failed. Check your API key.")
                         return self._get_mock_news()
+                    elif response.status == 429:
+                        print("NewsAPI.org rate limit exceeded. Using fallback data.")
+                        return self._get_mock_news()
+                    else:
+                        print(f"NewsAPI.org HTTP error: {response.status}")
+                        return self._get_mock_news()
+                        
+        except aiohttp.ClientError as e:
+            print(f"News API connection error: {str(e)}")
+            return self._get_mock_news()
         except Exception as e:
             print(f"News API error: {str(e)}")
-            # Return mock data as fallback
             return self._get_mock_news()
+
     
     def _get_mock_news(self) -> Dict[str, Any]:
         """Fallback mock news data"""

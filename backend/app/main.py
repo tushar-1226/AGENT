@@ -430,7 +430,39 @@ async def root():
     return {"message": "Friday Agent API is running", "status": "online"}
 
 
-# ============= Authentication Endpoints =============
+# ============= Health Check Endpoints =============
+
+@app.get("/health")
+async def health_check():
+    """Basic health check endpoint for load balancers and Docker"""
+    from datetime import datetime
+    return {
+        "status": "healthy",
+        "service": "friday-agent",
+        "version": "2.1.0",
+        "timestamp": datetime.now().isoformat()
+    }
+
+@app.get("/ready")
+async def readiness_check():
+    """Readiness probe - checks if app is ready to serve traffic"""
+    try:
+        # Check database connectivity
+        session_manager.get_all_sessions()
+        return {
+            "status": "ready",
+            "checks": {
+                "database": "ok",
+                "api": "ok"
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "not ready",
+            "error": str(e)
+        }
+
+
 
 
 @app.post("/api/auth/register")
