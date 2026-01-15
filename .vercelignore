@@ -1,0 +1,11 @@
+# Vercel configuration - ignore backend files
+backend/
+Dockerfile.backend
+Dockerfile.frontend
+docker-compose.yml
+.dockerignore
+scripts/
+*.db
+*.log
+.env
+.env.production
