@@ -4,7 +4,7 @@ WARNING:modules.text_to_speech:⚠️  Failed to initialize TTS engine: libespea
 INFO:modules.session_manager:Database tables initialized
 INFO:modules.session_manager:Session manager initialized with database: chat_sessions.db
 INFO:__main__:Friday Agent API initialized successfully
-/home/tushar/Downloads/Dev/Agent/friday-agent/backend/app/main.py:3697: DeprecationWarning: 
+/home/tushar/Downloads/Dev/Agent/friday-agent/backend/app/main.py:3729: DeprecationWarning: 
         on_event is deprecated, use lifespan event handlers instead.
 
         Read more about it in the
@@ -12,7 +12,7 @@ INFO:__main__:Friday Agent API initialized successfully
         
   @app.on_event("startup")
 INFO:__main__:Starting Friday Agent API...
-INFO:     Started server process [4059]
+INFO:     Started server process [15723]
 INFO:     Waiting for application startup.
 INFO:__main__:Running startup checks...
 INFO:__main__:Initialized LocalLLM
@@ -23,7 +23,7 @@ INFO:__main__:   2. Pull a model: ollama pull qwen2.5-coder:7b
 INFO:__main__:Friday Agent API ready!
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:48520 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:35434 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 1
 INFO:     connection open
 Google libraries not installed. Run: pip install google-auth google-auth-oauthlib google-api-python-client
@@ -32,15 +32,15 @@ SQLAlchemy not installed. Run: pip install sqlalchemy psycopg2-binary pymysql
 Playwright not installed. Run: pip install playwright && playwright install
 Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
 Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:48514 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35446 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
 Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:48514 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:     connection closed
+INFO:     127.0.0.1:35446 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
 INFO:__main__:WebSocket disconnected. Total connections: 0
-INFO:     127.0.0.1:48526 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:48558 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 1
 INFO:     connection open
-INFO:     127.0.0.1:48536 - "WebSocket /ws" [accepted]
+INFO:     connection closed
+INFO:     127.0.0.1:48572 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 2
 INFO:     connection open
 INFO:modules.gemini_processor:✅ Gemini processor initialized
@@ -50,39 +50,20 @@ INFO:__main__:Initialized BrowserAutomation
 INFO:modules.command_processor:✅ OpenRouter available for fallback and multi-model responses
 INFO:modules.command_processor:Hybrid LLM system initialized (Local + Cloud) - Default mode: hybrid
 INFO:__main__:Initialized CommandProcessor with LLM instances
-INFO:     127.0.0.1:41656 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41656 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41656 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41656 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 1
-INFO:     connection closed
-INFO:     127.0.0.1:50682 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 2
-INFO:     connection open
-INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58666 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58666 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58682 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58682 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58682 - "OPTIONS /api/llm/set-mode HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38586 - "POST /api/llm/set-mode HTTP/1.1" 200 OK
+INFO:modules.command_processor:Processing command: what is AI (Mode: cloud)
+INFO:modules.command_processor:Query complexity: simple, Code-related: False, Using: cloud
+INFO:modules.gemini_processor:Analysis (gemini): unknown
+INFO:modules.command_processor:AI detected intent: unknown, app: None
+INFO:__main__:✅ Chat message saved to history: what is AI...
+INFO:__main__:📢 Broadcasting new_chat_message to 2 clients
+INFO:__main__:✅ Broadcast complete
 INFO:__main__:WebSocket disconnected. Total connections: 1
 INFO:__main__:WebSocket disconnected. Total connections: 0
 INFO:     connection closed
 INFO:     connection closed
-INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58196 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 1
-INFO:     connection open
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:50684 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:50684 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58202 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 2
-INFO:     connection open
-INFO:__main__:WebSocket disconnected. Total connections: 1
-INFO:     connection closed
-INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50684 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58206 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 2
-INFO:     connection open
-INFO:     127.0.0.1:50684 - "OPTIONS /api/llm/set-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58214 - "POST /api/llm/set-mode HTTP/1.1" 200 OK
