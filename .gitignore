@@ -1,0 +1,38 @@
+# Node modules
+node_modules/
+frontend/node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+backend.log
+frontend.log
+
+# Databases
+*.db
+analytics.db
+chat_sessions.db
+projects.db
+users.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+build/

@@ -1,0 +1,50 @@
+[
+    {
+        "type": "database",
+        "name": "Database Node",
+        "color": "#f97316",
+        "inputs": [
+            "input"
+        ],
+        "outputs": [
+            "result",
+            "error"
+        ]
+    },
+    {
+        "type": "api_call",
+        "name": "API Call",
+        "color": "#a855f7",
+        "inputs": [
+            "trigger",
+            "params"
+        ],
+        "outputs": [
+            "response",
+            "error"
+        ]
+    },
+    {
+        "type": "condition",
+        "name": "Condition",
+        "color": "#eab308",
+        "inputs": [
+            "input"
+        ],
+        "outputs": [
+            "true",
+            "false"
+        ]
+    },
+    {
+        "type": "function",
+        "name": "Custom Function",
+        "color": "#22c55e",
+        "inputs": [
+            "args"
+        ],
+        "outputs": [
+            "return"
+        ]
+    }
+]

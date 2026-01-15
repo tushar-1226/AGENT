@@ -1,0 +1,1 @@
+This is a test document for RAG testing. Friday is an AI assistant. It can answer questions about documents.
