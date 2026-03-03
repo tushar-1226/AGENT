@@ -13,8 +13,23 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from modules.voice_recognition import VoiceRecognizer
-from modules.text_to_speech import TextToSpeech
+# Setup logging first
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Optional audio modules (may fail on Python 3.13+)
+try:
+    from modules.voice_recognition import VoiceRecognizer
+except (ImportError, ModuleNotFoundError) as e:
+    logger.warning(f"Voice recognition disabled: {e}")
+    VoiceRecognizer = None
+
+try:
+    from modules.text_to_speech import TextToSpeech
+except (ImportError, ModuleNotFoundError) as e:
+    logger.warning(f"Text-to-speech disabled: {e}")
+    TextToSpeech = None
+
 from modules.app_launcher import AppLauncher
 from modules.command_processor import CommandProcessor
 from modules.session_manager import SessionManager
@@ -22,7 +37,6 @@ from modules.file_processor import FileProcessor
 from modules.external_apis import ExternalAPIs
 from modules.task_manager import TaskManager
 from modules.google_integration import GoogleIntegration
-from modules.local_llm import LocalLLM, HybridLLM
 from modules.gemini_processor import GeminiProcessor
 from modules.rag_engine import RAGEngine
 from modules.terminal_manager import TerminalManager
@@ -45,15 +59,26 @@ from modules.security_copilot import SecurityCopilot
 from modules.performance_profiler import PerformanceProfiler
 from modules.workflow_automation import WorkflowAutomationEngine
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# New modules for improvements
+from modules.cache_manager import CacheManager, get_cache_manager
+from modules.metrics import MetricsCollector, get_metrics_collector, MetricsMiddleware
+from modules.code_intelligence import CodeIntelligence
+from middleware.security import SecurityHeadersMiddleware, RateLimitMiddleware, RequestIDMiddleware
+import os
 
-app = FastAPI(title="Friday Agent API", version="1.0.0")
+app = FastAPI(title="Friday Agent API", version="2.1.0")
 
-# CORS middleware
+# Security and Performance Middlewares
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitMiddleware, requests_per_minute=100)
+app.add_middleware(RequestIDMiddleware)
+app.add_middleware(MetricsMiddleware)
+
+# CORS middleware - Updated for production
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     allow_headers=["*"],
@@ -64,7 +89,7 @@ app.add_middleware(
 logger.info("Initializing Friday Agent API...")
 
 # Core modules (always needed)
-tts = TextToSpeech()
+tts = TextToSpeech() if TextToSpeech is not None else None
 app_launcher = AppLauncher()
 # Note: CommandProcessor will be initialized after LLM modules to ensure proper dependency injection
 command_processor = None
@@ -81,8 +106,6 @@ external_apis = None
 task_manager = None
 google_integration = None
 gemini_processor = None
-local_llm = None
-hybrid_llm = None
 rag_engine = None
 terminal_manager = None
 git_manager = None
@@ -111,6 +134,11 @@ ai_pair_programmer = None
 visual_programming = None
 code_search_navigation = None
 smart_testing_suite = None
+
+# New improvement modules (lazy-loaded)
+cache_manager = None
+metrics_collector = None
+code_intelligence = None
 
 
 def get_file_processor():
@@ -161,26 +189,6 @@ def get_gemini_processor():
         gemini_processor = GeminiProcessor()
         logger.info("Initialized GeminiProcessor")
     return gemini_processor
-
-
-def get_local_llm():
-    global local_llm
-    if local_llm is None:
-        from modules.local_llm import LocalLLM
-
-        local_llm = LocalLLM()
-        logger.info("Initialized LocalLLM")
-    return local_llm
-
-
-def get_hybrid_llm():
-    global hybrid_llm
-    if hybrid_llm is None:
-        from modules.local_llm import HybridLLM
-
-        hybrid_llm = HybridLLM(get_gemini_processor(), get_local_llm())
-        logger.info("Initialized HybridLLM")
-    return hybrid_llm
 
 
 def get_rag_engine():
@@ -373,6 +381,23 @@ def get_workflow_automation():
     return workflow_automation
 
 
+def get_cache_manager():
+    """Get cache manager instance"""
+    from modules.cache_manager import get_cache_manager as _get_cache
+    return _get_cache()
+
+
+def get_code_intelligence():
+    """Get code intelligence module"""
+    global code_intelligence
+    if code_intelligence is None:
+        from modules.code_intelligence import CodeIntelligence
+        
+        code_intelligence = CodeIntelligence(get_gemini_processor())
+        logger.info("Initialized CodeIntelligence")
+    return code_intelligence
+
+
 def get_command_processor():
     """Get or initialize the CommandProcessor with proper LLM instances"""
     global command_processor
@@ -383,7 +408,6 @@ def get_command_processor():
         command_processor = CommandProcessor(
             app_launcher,
             tts,
-            local_llm=get_local_llm(),
             gemini=get_gemini_processor(),
             browser_automation=get_browser_automation()
         )
@@ -391,7 +415,11 @@ def get_command_processor():
     return command_processor
 
 
-logger.info("Friday Agent API initialized successfully")
+# Initialize cache and metrics
+cache_manager = get_cache_manager()
+metrics_collector = get_metrics_collector()
+
+logger.info("Friday Agent API initialized successfully with enhanced security and monitoring")
 
 # Store active WebSocket connections
 active_connections: List[WebSocket] = []
@@ -462,6 +490,102 @@ async def readiness_check():
             "error": str(e)
         }
 
+
+@app.get("/health/detailed")
+async def detailed_health_check():
+    """Detailed health check with component status"""
+    from datetime import datetime
+    import time
+    
+    metrics = get_metrics_collector()
+    cache = get_cache_manager()
+    
+    health_checks = {
+        "database": "unknown",
+        "cache": "unknown",
+        "rag_engine": "unknown",
+        "llm_api": "unknown"
+    }
+    
+    # Check database
+    try:
+        session_manager.get_all_sessions()
+        health_checks["database"] = "healthy"
+    except Exception as e:
+        health_checks["database"] = f"unhealthy: {str(e)}"
+    
+    # Check cache
+    try:
+        cache_stats = cache.get_stats()
+        health_checks["cache"] = "healthy"
+    except Exception as e:
+        health_checks["cache"] = f"unhealthy: {str(e)}"
+    
+    # Check RAG engine
+    try:
+        rag = get_rag_engine()
+        rag.get_stats()
+        health_checks["rag_engine"] = "healthy"
+    except Exception as e:
+        health_checks["rag_engine"] = f"error: {str(e)}"
+    
+    # Check LLM API
+    try:
+        gemini = get_gemini_processor()
+        health_checks["llm_api"] = "healthy"
+    except Exception as e:
+        health_checks["llm_api"] = f"error: {str(e)}"
+    
+    return {
+        "status": "healthy",
+        "version": "2.1.0",
+        "timestamp": datetime.now().isoformat(),
+        "uptime_seconds": metrics.get_gauge("uptime_seconds") or time.time() - metrics.start_time,
+        "components": health_checks,
+        "metrics": {
+            "active_connections": len(manager.active_connections),
+            "total_requests": metrics.get_counter("http_requests_total"),
+            "cache_hit_rate": cache.get_stats()["hit_rate"]
+        }
+    }
+
+
+@app.get("/metrics")
+async def metrics_endpoint():
+    """Prometheus-compatible metrics endpoint"""
+    metrics = get_metrics_collector()
+    
+    # Update current metrics
+    metrics.set_gauge("active_websocket_connections", len(manager.active_connections))
+    metrics.set_gauge("cache_entries", get_cache_manager().get_stats()["entries"])
+    
+    return {
+        "metrics": metrics.get_all_metrics(),
+        "prometheus": metrics.export_prometheus()
+    }
+
+
+@app.get("/api/cache/stats")
+async def cache_stats():
+    """Get cache statistics"""
+    cache = get_cache_manager()
+    return cache.get_stats()
+
+
+@app.post("/api/cache/clear")
+async def clear_cache():
+    """Clear all cache"""
+    cache = get_cache_manager()
+    cache.clear()
+    return {"success": True, "message": "Cache cleared"}
+
+
+@app.post("/api/cache/cleanup")
+async def cleanup_cache():
+    """Clean up expired cache entries"""
+    cache = get_cache_manager()
+    cache.cleanup_expired()
+    return {"success": True, "message": "Expired entries cleaned up"}
 
 
 
@@ -1223,6 +1347,8 @@ async def start_voice():
                 )
             )
 
+        if VoiceRecognizer is None:
+            raise Exception("Voice recognition not available (Python 3.13+ compatibility issue)")
         voice_recognizer = VoiceRecognizer(callback=on_voice_command)
 
     voice_recognizer.start_listening()
@@ -1627,139 +1753,6 @@ async def create_email_draft(data: dict):
     except Exception as e:
         logger.error(f"Create draft error: {e}")
         return {"success": False, "error": str(e)}
-
-
-# ============= LOCAL LLM ENDPOINTS =============
-
-
-@app.get("/api/local-llm/status")
-async def get_local_llm_status():
-    """Check if Ollama is available"""
-    try:
-        llm = get_local_llm()
-        available = await llm.check_availability()
-        hllm = get_hybrid_llm()
-        status = hllm.get_status()
-        setup = llm.get_setup_instructions()
-        return {
-            "success": True,
-            "available": available,
-            "status": status,
-            "setup": setup,
-        }
-    except Exception as e:
-        logger.error(f"Local LLM status error: {e}")
-        return {"success": False, "error": str(e)}
-
-
-@app.get("/api/local-llm/models")
-async def list_local_models():
-    """List available local models"""
-    try:
-        models = await local_llm.list_models()
-        return {"success": True, "models": models}
-    except Exception as e:
-        logger.error(f"List models error: {e}")
-        return {"success": False, "error": str(e)}
-
-
-@app.post("/api/local-llm/mode")
-async def set_llm_mode(data: dict):
-    """Switch between cloud and local mode"""
-    try:
-        mode = data.get("mode", "hybrid")
-        hllm = get_hybrid_llm()
-        success = await hllm.set_mode(mode)
-        return {"success": success, "mode": mode if success else hllm.mode}
-    except Exception as e:
-        logger.error(f"Set mode error: {e}")
-        return {"success": False, "error": str(e)}
-
-
-@app.post("/api/local-llm/pull")
-async def pull_local_model(data: dict):
-    """Pull a model from Ollama registry"""
-    try:
-        model_name = data.get("model")
-        success = await local_llm.pull_model(model_name)
-        return {"success": success}
-    except Exception as e:
-        logger.error(f"Pull model error: {e}")
-        return {"success": False, "error": str(e)}
-
-
-# ============= NEW LOCAL LLM ENDPOINTS (Frontend Compatible) =============
-
-@app.get("/api/local-llm/available-models")
-async def get_available_models_v2():
-    """Get processed models list for UI"""
-    try:
-        local_llm = get_local_llm()
-        # Ensure we have latest installed status
-        await local_llm.check_availability()
-        
-        models = local_llm.get_available_models()
-        return {"success": True, "models": models}
-    except Exception as e:
-        logger.error(f"Get available models error: {e}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
-
-
-@app.post("/api/local-llm/select-model")
-async def select_local_model(data: dict):
-    """Select active local model"""
-    try:
-        model_id = data.get("model_id")
-        if not model_id:
-            return JSONResponse(status_code=400, content={"error": "Model ID required"})
-            
-        local_llm = get_local_llm()
-        success = local_llm.set_model(model_id)
-        
-        if success:
-            return {"success": True, "model": local_llm.get_current_model()}
-        else:
-            return JSONResponse(status_code=400, content={"error": "Invalid model ID"})
-    except Exception as e:
-        logger.error(f"Select model error: {e}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
-
-
-@app.get("/api/llm/get-mode")
-async def get_llm_mode():
-    """Get current LLM mode (local/cloud/hybrid)"""
-    try:
-        # CommandProcessor holds the mode authority
-        cp = get_command_processor()
-        return {
-            "success": True, 
-            "mode": cp.mode,
-            "using_hybrid": cp.hybrid_llm is not None
-        }
-    except Exception as e:
-        logger.error(f"Get mode error: {e}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
-
-
-@app.post("/api/llm/set-mode")
-async def set_llm_mode_v2(data: dict):
-    """Set LLM mode"""
-    try:
-        mode = data.get("mode") # local, cloud, hybrid
-        if mode not in ['local', 'cloud', 'hybrid']:
-            return JSONResponse(status_code=400, content={"error": "Invalid mode"})
-            
-        cp = get_command_processor()
-        cp.mode = mode
-        
-        # If hybrid, also update hybrid manager
-        if cp.hybrid_llm:
-            await cp.hybrid_llm.set_mode(mode)
-            
-        return {"success": True, "mode": mode}
-    except Exception as e:
-        logger.error(f"Set mode error: {e}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 # ============= RAG DOCUMENT INTELLIGENCE ENDPOINTS =============
@@ -3163,6 +3156,224 @@ async def get_openrouter_models():
 
 
 @app.get("/api/openrouter/models/free")
+async def get_openrouter_free_models():
+    """Get list of free OpenRouter models"""
+    try:
+        api = get_openrouter()
+        models = api.get_available_models()
+        
+        # Filter for free models
+        free_models = [m for m in models if m.get("pricing", {}).get("prompt", 0) == 0]
+        
+        return {
+            "success": True,
+            "models": free_models,
+            "count": len(free_models)
+        }
+    except Exception as e:
+        logger.error(f"Get free OpenRouter models error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+# ==================== GROQ API ENDPOINTS ====================
+# Ultra-fast inference with Groq's LPU architecture
+
+groq_api = None
+
+def get_groq():
+    """Lazy-load Groq integration"""
+    global groq_api
+    if groq_api is None:
+        from modules.groq_integration import get_groq_instance
+        groq_api = get_groq_instance()
+    return groq_api
+
+
+@app.post("/api/groq/chat")
+async def groq_chat(request: dict):
+    """
+    Send a chat request to Groq (ultra-fast inference)
+    
+    Request body:
+    {
+        "messages": [{"role": "user", "content": "Hello"}],
+        "model": "llama-3.3-70b-versatile",
+        "temperature": 0.7,
+        "max_tokens": 1024
+    }
+    """
+    try:
+        api = get_groq()
+        if api is None:
+            return JSONResponse(
+                status_code=503,
+                content={"error": "Groq API not configured", "success": False}
+            )
+        
+        messages = request.get("messages", [])
+        model = request.get("model")
+        temperature = request.get("temperature", 0.7)
+        max_tokens = request.get("max_tokens", 1024)
+        
+        if not messages:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "messages field is required"}
+            )
+        
+        response = api.chat(
+            messages=messages,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        
+        if response.get("error"):
+            return JSONResponse(
+                status_code=500,
+                content={"error": response["error"], "success": False}
+            )
+        
+        return {
+            "success": True,
+            "response": response,
+            "provider": "groq"
+        }
+    except Exception as e:
+        logger.error(f"Groq chat error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/groq/generate")
+async def groq_generate(request: dict):
+    """
+    Generate text from a simple prompt using Groq
+    Ultra-fast - typically < 200ms for response
+    """
+    try:
+        api = get_groq()
+        if api is None:
+            return JSONResponse(
+                status_code=503,
+                content={"error": "Groq API not configured", "success": False}
+            )
+        
+        prompt = request.get("prompt", "")
+        model = request.get("model")
+        temperature = request.get("temperature", 0.7)
+        max_tokens = request.get("max_tokens", 1024)
+        
+        if not prompt:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "prompt field is required"}
+            )
+        
+        response_text = api.generate_text(
+            prompt=prompt,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        
+        return {
+            "success": True,
+            "text": response_text,
+            "provider": "groq"
+        }
+    except Exception as e:
+        logger.error(f"Groq generate error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/groq/code-analysis")
+async def groq_code_analysis(request: dict):
+    """
+    Analyze code using Groq's ultra-fast inference
+    Perfect for real-time code analysis
+    """
+    try:
+        api = get_groq()
+        if api is None:
+            return JSONResponse(
+                status_code=503,
+                content={"error": "Groq API not configured", "success": False}
+            )
+        
+        code = request.get("code", "")
+        language = request.get("language", "python")
+        task = request.get("task", "review")
+        
+        if not code:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "code field is required"}
+            )
+        
+        result = await api.analyze_code_async(
+            code=code,
+            language=language,
+            task=task
+        )
+        
+        return {
+            "success": True,
+            "analysis": result,
+            "provider": "groq"
+        }
+    except Exception as e:
+        logger.error(f"Groq code analysis error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.get("/api/groq/models")
+async def get_groq_models():
+    """Get list of available Groq models"""
+    try:
+        api = get_groq()
+        if api is None:
+            return JSONResponse(
+                status_code=503,
+                content={"error": "Groq API not configured", "success": False}
+            )
+        
+        models = api.get_available_models()
+        
+        return {
+            "success": True,
+            "models": models,
+            "count": len(models),
+            "recommended": "llama-3.3-70b-versatile"
+        }
+    except Exception as e:
+        logger.error(f"Get Groq models error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.get("/api/groq/status")
+async def groq_status():
+    """Check if Groq API is configured and available"""
+    try:
+        api = get_groq()
+        if api is None:
+            return {
+                "success": False,
+                "available": False,
+                "message": "Groq API key not configured"
+            }
+        
+        return {
+            "success": True,
+            "available": True,
+            "model": api.model,
+            "message": "Groq API ready for ultra-fast inference"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "available": False,
+            "error": str(e)
+        }
 
 
 # ==================== NEW ADVANCED FEATURES API ====================
@@ -3730,10 +3941,69 @@ async def websocket_endpoint(websocket: WebSocket):
 async def startup_event():
     """Run startup checks"""
     logger.info("Running startup checks...")
+    
+    # Initialize metrics
+    metrics = get_metrics_collector()
+    metrics.inc_counter("app_starts_total")
+    
+    # Warm up cache
+    cache = get_cache_manager()
+    logger.info(f"Cache initialized with {cache.get_stats()['entries']} entries")
 
-    # Check Ollama availability
+
+# ==================== Code Intelligence Endpoints ====================
+
+@app.post("/api/code-intelligence/analyze")
+async def analyze_code_quality(data: dict):
+    """Analyze code quality and provide insights"""
     try:
-        llm = get_local_llm()
+        ci = get_code_intelligence()
+        code = data.get("code", "")
+        language = data.get("language", "python")
+        
+        result = await ci.analyze_code_quality(code, language)
+        
+        # Track metric
+        metrics = get_metrics_collector()
+        metrics.inc_counter("code_analysis_requests_total")
+        
+        return result
+    except Exception as e:
+        logger.error(f"Error analyzing code: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/code-intelligence/refactor-suggestions")
+async def get_refactoring_suggestions(data: dict):
+    """Get AI-powered refactoring suggestions"""
+    try:
+        ci = get_code_intelligence()
+        code = data.get("code", "")
+        language = data.get("language", "python")
+        
+        result = await ci.suggest_refactoring(code, language)
+        return result
+    except Exception as e:
+        logger.error(f"Error getting refactoring suggestions: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
+
+
+@app.post("/api/code-intelligence/completions")
+async def get_code_completions(data: dict):
+    """Get context-aware code completions"""
+    try:
+        ci = get_code_intelligence()
+        code = data.get("code", "")
+        cursor_position = data.get("cursor_position", len(code))
+        project_context = data.get("project_context")
+        
+        result = await ci.get_context_aware_completions(
+            code, cursor_position, project_context
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error generating completions: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e), "success": False})
         available = await llm.check_availability()
         if available:
             logger.info(f"✅ Ollama is running with {len(llm.installed_models)} models available")

@@ -2,24 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import AuthModal from './AuthModal';
-import ModeToggle from './ModeToggle';
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'connecting' | 'error';
 
-interface Model {
-    id: string;
-    name: string;
-    icon: string;
-}
-
 interface HeaderProps {
     connectionStatus?: ConnectionStatus;
-    currentModel?: Model | null;
 }
 
 export default function Header({
-    connectionStatus = 'disconnected',
-    currentModel = null
+    connectionStatus = 'disconnected'
 }: HeaderProps) {
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [user, setUser] = useState<{ email: string; name: string } | null>(null);
@@ -94,20 +85,6 @@ export default function Header({
                         </div>
                     </div>
                 </div>
-
-                {/* Center: Current Model Indicator */}
-                {currentModel && (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30">
-                        <span className="text-lg">{currentModel.icon}</span>
-                        <div className="flex flex-col">
-                            <span className="text-xs text-gray-400 font-medium">Active Model</span>
-                            <span className="text-sm text-white font-semibold">{currentModel.name}</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* Mode Toggle */}
-                <ModeToggle />
 
                 {/* Right: User Profile/Login */}
                 <div className="flex items-center gap-3">

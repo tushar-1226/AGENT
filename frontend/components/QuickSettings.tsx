@@ -162,23 +162,6 @@ export default function QuickSettings() {
                 </button>
             </div>
 
-            {/* Local Mode */}
-            <div className="space-y-3">
-                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Privacy</div>
-
-                <div className="glass-card p-3 border-purple-500/20">
-                    <div className="flex items-center justify-between mb-2">
-                        <div>
-                            <div className="text-sm text-white">Local-Only Mode</div>
-                            <div className="text-xs text-gray-500">Use Ollama instead of cloud</div>
-                        </div>
-                        <div className="w-2 h-2 rounded-full bg-gray-500" title="Not configured"></div>
-                    </div>
-                    <div className="text-xs text-gray-400 mt-2">
-                        Requires Ollama installation. See Settings → Advanced
-                    </div>
-                </div>
-            </div>
 
             {/* Google Integration */}
             <div className="space-y-3">

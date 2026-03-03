@@ -1,10 +1,11 @@
+WARNING:__main__:Voice recognition disabled: No module named 'aifc'
 INFO:modules.text_to_speech:✅ Text-to-speech engine available
 INFO:__main__:Initializing Friday Agent API...
 WARNING:modules.text_to_speech:⚠️  Failed to initialize TTS engine: libespeak.so.1: cannot open shared object file: No such file or directory
 INFO:modules.session_manager:Database tables initialized
 INFO:modules.session_manager:Session manager initialized with database: chat_sessions.db
-INFO:__main__:Friday Agent API initialized successfully
-/home/tushar/Downloads/Dev/Agent/friday-agent/backend/app/main.py:3729: DeprecationWarning: 
+INFO:__main__:Friday Agent API initialized successfully with enhanced security and monitoring
+/home/tushar/Developer/Dev/Agent/friday-agent/backend/app/main.py:3940: DeprecationWarning: 
         on_event is deprecated, use lifespan event handlers instead.
 
         Read more about it in the
@@ -12,35 +13,24 @@ INFO:__main__:Friday Agent API initialized successfully
         
   @app.on_event("startup")
 INFO:__main__:Starting Friday Agent API...
-INFO:     Started server process [15723]
+INFO:     Started server process [36915]
 INFO:     Waiting for application startup.
 INFO:__main__:Running startup checks...
-INFO:__main__:Initialized LocalLLM
-WARNING:__main__:⚠️  Ollama is not running or no models are installed
-INFO:__main__:   To use local LLM mode:
-INFO:__main__:   1. Start Ollama: ollama serve
-INFO:__main__:   2. Pull a model: ollama pull qwen2.5-coder:7b
-INFO:__main__:Friday Agent API ready!
+INFO:__main__:Cache initialized with 0 entries
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:35434 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:44058 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56588 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 1
 INFO:     connection open
-Google libraries not installed. Run: pip install google-auth google-auth-oauthlib google-api-python-client
-ChromaDB not installed. Run: pip install chromadb
-SQLAlchemy not installed. Run: pip install sqlalchemy psycopg2-binary pymysql
-Playwright not installed. Run: pip install playwright && playwright install
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:35446 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-Ollama not available: Cannot connect to host localhost:11434 ssl:default [Connect call failed ('127.0.0.1', 11434)]
-INFO:     127.0.0.1:35446 - "GET /api/local-llm/available-models HTTP/1.1" 200 OK
-INFO:__main__:WebSocket disconnected. Total connections: 0
-INFO:     127.0.0.1:48558 - "WebSocket /ws" [accepted]
-INFO:__main__:WebSocket connected. Total connections: 1
-INFO:     connection open
+INFO:     127.0.0.1:56572 - "GET /api/local-llm/available-models HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56572 - "GET /api/local-llm/available-models HTTP/1.1" 404 Not Found
 INFO:     connection closed
-INFO:     127.0.0.1:48572 - "WebSocket /ws" [accepted]
+INFO:     127.0.0.1:56600 - "WebSocket /ws" [accepted]
+INFO:__main__:WebSocket connected. Total connections: 2
+INFO:__main__:WebSocket disconnected. Total connections: 1
+INFO:     connection open
+INFO:     127.0.0.1:56604 - "WebSocket /ws" [accepted]
 INFO:__main__:WebSocket connected. Total connections: 2
 INFO:     connection open
 INFO:modules.gemini_processor:✅ Gemini processor initialized
@@ -48,22 +38,77 @@ INFO:modules.gemini_processor:Gemini processor initialized successfully
 INFO:__main__:Initialized GeminiProcessor
 INFO:__main__:Initialized BrowserAutomation
 INFO:modules.command_processor:✅ OpenRouter available for fallback and multi-model responses
-INFO:modules.command_processor:Hybrid LLM system initialized (Local + Cloud) - Default mode: hybrid
+INFO:modules.command_processor:Gemini AI system initialized
 INFO:__main__:Initialized CommandProcessor with LLM instances
-INFO:     127.0.0.1:58666 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58666 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58682 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58682 - "GET /api/llm/get-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58682 - "OPTIONS /api/llm/set-mode HTTP/1.1" 200 OK
-INFO:     127.0.0.1:38586 - "POST /api/llm/set-mode HTTP/1.1" 200 OK
-INFO:modules.command_processor:Processing command: what is AI (Mode: cloud)
-INFO:modules.command_processor:Query complexity: simple, Code-related: False, Using: cloud
+INFO:modules.command_processor:Processing command: what is agent in AI
 INFO:modules.gemini_processor:Analysis (gemini): unknown
 INFO:modules.command_processor:AI detected intent: unknown, app: None
-INFO:__main__:✅ Chat message saved to history: what is AI...
+INFO:__main__:✅ Chat message saved to history: what is agent in AI...
 INFO:__main__:📢 Broadcasting new_chat_message to 2 clients
 INFO:__main__:✅ Broadcast complete
+INFO:modules.command_processor:Processing command: open tab in brave and search lion 
+ERROR:modules.gemini_processor:Gemini analysis error: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash
+Please retry in 54.467321125s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 20
+}
+, retry_delay {
+  seconds: 54
+}
+]
+INFO:modules.gemini_processor:Analysis (None): unknown
+INFO:modules.app_launcher:Launching tab in brave with command: tab in brave
+ERROR:modules.app_launcher:Application tab in brave not found
+INFO:__main__:✅ Chat message saved to history: open tab in brave and search lion ...
+INFO:__main__:📢 Broadcasting new_chat_message to 2 clients
+INFO:__main__:✅ Broadcast complete
+INFO:modules.command_processor:Processing command: what is agentic ai
+ERROR:modules.gemini_processor:Gemini analysis error: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash
+Please retry in 56.965037777s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 20
+}
+, retry_delay {
+  seconds: 56
+}
+]
+INFO:modules.gemini_processor:Analysis (None): unknown
+INFO:__main__:✅ Chat message saved to history: what is agentic ai...
+INFO:__main__:📢 Broadcasting new_chat_message to 2 clients
+INFO:__main__:✅ Broadcast complete
+INFO:     Shutting down
 INFO:__main__:WebSocket disconnected. Total connections: 1
 INFO:__main__:WebSocket disconnected. Total connections: 0
 INFO:     connection closed
 INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [36915]

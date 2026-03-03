@@ -46,7 +46,6 @@ export default function Home() {
     const [codeAssistantOpen, setCodeAssistantOpen] = useState(false);
     const [splitScreenOpen, setSplitScreenOpen] = useState(false);
     const [docsOpen, setDocsOpen] = useState(false);
-    const [currentModel, setCurrentModel] = useState<{ id: string; name: string; icon: string } | null>(null);
     const [user, setUser] = useState<{ name: string; email: string } | null>(null);
 
     // Voice integration
@@ -278,7 +277,6 @@ export default function Home() {
                     onToggleListening={toggleVoiceListening}
                     voiceSupported={voiceSupported}
                     onFileAnalyzed={handleFileAnalyzed}
-                    onModelChange={setCurrentModel}
                     timeRemaining={timeRemaining ?? undefined}
                 />
             </main>

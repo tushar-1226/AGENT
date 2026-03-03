@@ -56,11 +56,17 @@ class GeminiProcessor:
         
         # System prompt for Friday assistant
         self.system_context = """You are F.R.I.D.A.Y., a voice assistant inspired by Tony Stark's AI.
-You help users control their computer through voice commands. Your capabilities include:
+You are an intelligent, knowledgeable assistant capable of both controlling the computer and answering questions.
+
+Your capabilities include:
+- Answering general knowledge questions directly (what is X, explain Y, tell me about Z)
 - Opening and closing applications
 - Listing running and available applications
 - Responding to greetings and queries
 - Providing system status
+
+When users ask knowledge questions (what, why, how, explain), provide direct, informative answers.
+Do NOT suggest opening a browser or searching - answer directly using your knowledge.
 
 When analyzing user commands, identify the intent and extract relevant information.
 Respond in a helpful, concise, and friendly manner befitting an advanced AI assistant.
@@ -91,19 +97,40 @@ Always respond professionally yet warmly, like F.R.I.D.A.Y. would."""
 User command: "{user_input}"
 
 Analyze this command and provide a JSON response with:
-1. intent: The primary action (greeting, launch_app, close_app, list_apps, status, help, unknown)
+1. intent: The primary action (greeting, launch_app, close_app, list_apps, status, help, general_query, unknown)
+   - Use 'general_query' for questions requiring knowledge/information (what is, explain, tell me about, how does, etc.)
+   - Use 'launch_app' ONLY when user explicitly wants to open an application
 2. app_name: The application name if mentioned (or null)
 3. response: A brief, natural response F.R.I.D.A.Y. would give
+   - For general_query, provide a direct, informative answer
+   - For commands, acknowledge the action
+
+Examples:
+- "what is agentic ai" -> intent: "general_query", response: explain what agentic AI is
+- "open chrome" -> intent: "launch_app", app_name: "chrome"
+- "hello" -> intent: "greeting"
 
 Respond ONLY with valid JSON, no additional text."""
 
-            # Use active provider or fallback
+            # Use active provider with automatic fallback to OpenRouter
+            result = None
             if self.active_provider == 'gemini' and self.model:
-                result = self._analyze_with_gemini(prompt)
+                try:
+                    result = self._analyze_with_gemini(prompt)
+                except Exception as e:
+                    logger.warning(f"Gemini failed: {e}")
+                    # Fallback to OpenRouter
+                    if self.openrouter:
+                        logger.info("Falling back to OpenRouter...")
+                        try:
+                            result = self._analyze_with_openrouter(prompt)
+                        except Exception as or_error:
+                            logger.error(f"OpenRouter fallback failed: {or_error}")
             elif self.active_provider == 'openrouter' and self.openrouter:
                 result = self._analyze_with_openrouter(prompt)
-            else:
-                return {'success': False, 'intent': 'unknown', 'error': 'No provider available'}
+            
+            if not result or not result.get('success'):
+                return {'success': False, 'intent': 'unknown', 'error': 'No provider available or all failed'}
             
             logger.info(f"Analysis ({result.get('provider')}): {result.get('intent')}")
             return result

@@ -1,17 +1,16 @@
 """
 Command Processor Module for Friday Agent
 Processes natural language commands and executes appropriate actions
-Enhanced with Hybrid LLM (Local + Cloud) for intelligent command understanding
+Enhanced with Gemini AI for intelligent command understanding
 """
 import os
 import re
 import logging
-from typing import Dict, Optional, Callable, Literal
+from typing import Dict, Optional, Callable
 from dotenv import load_dotenv
 from modules.app_launcher import AppLauncher
 from modules.text_to_speech import TextToSpeech
 from modules.gemini_processor import GeminiProcessor
-from modules.local_llm import LocalLLM, HybridLLM
 from modules.query_analyzer import QueryAnalyzer
 
 # OpenRouter integration
@@ -28,29 +27,21 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-LLMMode = Literal['local', 'cloud', 'hybrid']
-
 
 class CommandProcessor:
-    def __init__(self, app_launcher: AppLauncher, tts: TextToSpeech, local_llm=None, gemini=None, browser_automation=None):
+    def __init__(self, app_launcher: AppLauncher, tts: TextToSpeech, gemini=None, browser_automation=None):
         self.app_launcher = app_launcher
         self.tts = tts
         self.browser_automation = browser_automation
 
-        # Initialize Hybrid LLM system with provided instances or create new ones
+        # Initialize Gemini for AI processing
         try:
-            # Use provided instances or create new ones
+            # Use provided instance or create new one
             if gemini is None:
                 self.gemini = GeminiProcessor()
             else:
                 self.gemini = gemini
 
-            if local_llm is None:
-                self.local_llm = LocalLLM()
-            else:
-                self.local_llm = local_llm
-
-            self.hybrid_llm = HybridLLM(self.gemini, self.local_llm)
             self.query_analyzer = QueryAnalyzer()
             
             # Initialize OpenRouter for fallback and multi-model responses
@@ -62,32 +53,21 @@ class CommandProcessor:
                 except Exception as e:
                     logger.warning(f"OpenRouter initialization failed: {e}")
 
-            # Read default mode from environment, fallback to hybrid
-            default_mode = os.getenv('LLM_MODE', 'hybrid').lower()
-            if default_mode not in ['local', 'cloud', 'hybrid']:
-                logger.warning(f"Invalid LLM_MODE in .env: {default_mode}, using 'hybrid'")
-                default_mode = 'hybrid'
-
-            self.mode: LLMMode = default_mode
             self.use_ai = True
             self.enable_multi_model = os.getenv('ENABLE_MULTI_MODEL', 'false').lower() == 'true'
 
             # Usage tracking
             self.usage_stats = {
-                'local_queries': 0,
                 'cloud_queries': 0,
                 'fallback_count': 0
             }
 
-            logger.info(f"Hybrid LLM system initialized (Local + Cloud) - Default mode: {self.mode}")
+            logger.info("Gemini AI system initialized")
         except Exception as e:
-            logger.warning(f"Failed to initialize Hybrid LLM: {e}. Falling back to regex patterns.")
-            self.hybrid_llm = None
+            logger.warning(f"Failed to initialize Gemini: {e}. Falling back to regex patterns.")
             self.gemini = None
-            self.local_llm = None
             self.query_analyzer = None
             self.use_ai = False
-            self.mode = 'cloud'
 
         # Command patterns and their handlers (fallback)
         self.command_patterns = [
@@ -113,41 +93,6 @@ class CommandProcessor:
             (r'(?:status|are\s+you\s+(?:there|online|active))', self._handle_status),
         ]
 
-    def set_mode(self, mode: LLMMode) -> bool:
-        """Set LLM mode (local/cloud/hybrid)"""
-        if mode not in ['local', 'cloud', 'hybrid']:
-            return False
-
-        # Only check local availability if switching to local-only mode
-        if mode == 'local':
-            if not self.local_llm:
-                logger.warning("Local LLM not initialized, cannot switch to local mode")
-                return False
-
-            import asyncio
-            try:
-                # Run async check in sync context
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                available = loop.run_until_complete(self.local_llm.check_availability())
-                loop.close()
-
-                if not available:
-                    logger.warning("Local LLM not available (Ollama not running?), cannot switch to local mode")
-                    return False
-            except Exception as e:
-                logger.error(f"Error checking local LLM availability: {e}")
-                return False
-
-        # Cloud and Hybrid modes can work without local LLM
-        self.mode = mode
-        logger.info(f"LLM mode set to: {mode}")
-        return True
-
-    def get_mode(self) -> LLMMode:
-        """Get current LLM mode"""
-        return self.mode
-
     def get_usage_stats(self) -> dict:
         """Get usage statistics"""
         stats = self.usage_stats.copy()
@@ -156,37 +101,21 @@ class CommandProcessor:
         return stats
 
     async def process_command(self, command: str) -> Dict[str, any]:
-        """Process a natural language command using Hybrid LLM with intelligent routing"""
+        """Process a natural language command using Gemini AI"""
         original_command = command
         command_lower = command.lower().strip()
-        logger.info(f"Processing command: {command} (Mode: {self.mode})")
+        logger.info(f"Processing command: {command}")
 
         # Try AI-powered processing first
-        if self.use_ai and self.hybrid_llm:
+        if self.use_ai and self.gemini:
             try:
-                # Analyze query complexity
-                complexity = self.query_analyzer.analyze_complexity(command) if self.query_analyzer else 'medium'
-                is_code_related = self.query_analyzer.is_code_related(command) if self.query_analyzer else False
-
-                # Determine which model to use based on mode and complexity
-                use_local = self._should_use_local(complexity, is_code_related)
-
-                logger.info(f"Query complexity: {complexity}, Code-related: {is_code_related}, Using: {'local' if use_local else 'cloud'}")
-
-                # Route to appropriate model
-                if use_local:
-                    ai_result = await self._process_with_local(original_command)
-                else:
-                    ai_result = await self._process_with_cloud(original_command)
+                # Process with cloud (Gemini)
+                ai_result = await self._process_with_cloud(original_command)
 
                 if ai_result and ai_result.get('success'):
                     intent = ai_result.get('intent', 'unknown')
                     app_name = ai_result.get('app_name')
                     ai_response = ai_result.get('ai_response', '')
-
-                    # Add routing metadata
-                    ai_result['used_model'] = 'local' if use_local else 'cloud'
-                    ai_result['complexity'] = complexity
 
                     logger.info(f"AI detected intent: {intent}, app: {app_name}")
 
@@ -203,14 +132,20 @@ class CommandProcessor:
                         return self._handle_status_ai(ai_response)
                     elif intent == 'help':
                         return self._handle_help_ai(ai_response)
+                    elif intent == 'general_query':
+                        # Direct knowledge query - return AI response
+                        self.tts.speak(ai_response)
+                        return {
+                            'success': True,
+                            'message': 'General query answered',
+                            'response': ai_response
+                        }
 
                     # General query - return AI response
                     return {
                         'success': True,
                         'message': 'AI response',
-                        'response': ai_response,
-                        'used_model': 'local' if use_local else 'cloud',
-                        'complexity': complexity
+                        'response': ai_response
                     }
 
             except Exception as e:
@@ -228,67 +163,6 @@ class CommandProcessor:
             'message': "I didn't understand that command",
             'response': "I'm sorry, I didn't understand that. Try saying 'help' for a list of commands."
         }
-
-    def _should_use_local(self, complexity: str, is_code_related: bool) -> bool:
-        """Determine if local model should be used based on mode and query characteristics"""
-        if self.mode == 'cloud':
-            return False
-        elif self.mode == 'local':
-            return True
-        else:  # hybrid mode
-            # Simple queries always go to local
-            if complexity == 'simple':
-                return True
-            # Code-related medium queries go to local if we have a coding model
-            if complexity == 'medium' and is_code_related:
-                return True
-            # Complex queries go to cloud
-            return False
-
-    async def _process_with_local(self, command: str) -> Optional[Dict]:
-        """Process command with local model"""
-        try:
-            # Use local model directly with await
-            response = await self.local_llm.generate(
-                command,
-                system="You are F.R.I.D.A.Y., a helpful AI assistant. Provide concise, helpful responses."
-            )
-
-            if response:
-                self.usage_stats['local_queries'] += 1
-                return {
-                    'success': True,
-                    'ai_response': response,
-                    'intent': 'general_query'
-                }
-            else:
-                # If strict local mode, do not fallback
-                if self.mode == 'local':
-                    logger.warning("Local model returned empty response. Strict local mode enabled - skipping fallback.")
-                    return {
-                        'success': False,
-                        'message': 'Local model returned empty response',
-                        'response': 'I am unable to generate a response with the local model right now.'
-                    }
-
-                # Fallback to cloud for hybrid mode
-                logger.warning("Local model returned empty response, falling back to cloud")
-                self.usage_stats['fallback_count'] += 1
-                return await self._process_with_cloud(command)
-
-        except Exception as e:
-            # If strict local mode, do not fallback
-            if self.mode == 'local':
-                logger.error(f"Local model error in strict local mode: {e}")
-                return {
-                    'success': False,
-                    'message': f'Local model error: {str(e)}',
-                    'response': 'I encountered an error using the local model.'
-                }
-
-            logger.error(f"Local model error: {e}, falling back to cloud")
-            self.usage_stats['fallback_count'] += 1
-            return await self._process_with_cloud(command)
 
     async def _process_with_cloud(self, command: str) -> Optional[Dict]:
         """Process command with cloud model (Gemini)"""

@@ -2,8 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Laptop, Globe, Sparkles } from 'lucide-react';
-import ModeToggle from './ModeToggle';
 import AuthModal from './AuthModal';
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'connecting' | 'error';
@@ -196,13 +194,6 @@ export default function NavigationSidebar({
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-gray-700/50">
                             <div className={`w-2 h-2 rounded-full ${statusColors[connectionStatus]}`} />
                             <span className="text-xs text-gray-400">{statusText[connectionStatus]}</span>
-                        </div>
-                    )}
-
-                    {/* Mode Toggle (when expanded) */}
-                    {hovering && (
-                        <div className="mt-2">
-                            <ModeToggle />
                         </div>
                     )}
                 </div>

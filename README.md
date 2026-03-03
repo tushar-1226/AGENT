@@ -2,7 +2,7 @@
 
 **The Most Advanced AI-Powered Development Assistant**
 
-A comprehensive, standalone development platform with 24 revolutionary features including RAG document intelligence, integrated terminal, Git integration, and much more.
+A comprehensive, standalone development platform with 23 revolutionary features including RAG document intelligence, integrated terminal, Git integration, and cloud-based AI (Gemini & Groq).
 
 ![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![Python](https://img.shields.io/badge/python-3.9+-green)
@@ -37,11 +37,10 @@ A comprehensive, standalone development platform with 24 revolutionary features 
 17. **System Monitoring** - Real-time CPU, RAM, disk, network stats
 18. **Weather/News/Stock APIs** - Live data feeds
 19. **Google Calendar & Email** - OAuth integration ready
-20. **Local-Only Mode** - Ollama integration for privacy
-21. **Encrypted Session Storage** - AES-256 encryption
-22. **Voice Control** - Speech-to-text and text-to-speech
-23. **File Upload & Analysis** - Image and PDF processing
-24. **Enhanced Sidebar** - Chats, saved prompts, settings
+20. **Encrypted Session Storage** - AES-256 encryption
+21. **Voice Control** - Speech-to-text and text-to-speech
+22. **File Upload & Analysis** - Image and PDF processing
+23. **Enhanced Sidebar** - Chats, saved prompts, settings
 
 ---
 
@@ -111,7 +110,6 @@ backend/
 │   ├── task_manager.py      # AI task parsing
 │   ├── external_apis.py     # Weather/News/Stocks
 │   ├── google_integration.py # Google OAuth
-│   ├── local_llm.py         # Ollama integration
 │   ├── encryption.py        # AES-256 encryption
 │   ├── session_manager.py   # Chat history
 │   ├── file_processor.py    # File analysis
